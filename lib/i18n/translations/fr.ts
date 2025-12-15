@@ -22,6 +22,7 @@ export const fr: Translations = {
     allSemesters: 'Tous les semestres',
     allCourses: 'Tous les cours',
     clearFilters: 'Effacer les filtres',
+    clearAll: 'Tout effacer',
     searchPlaceholder: 'Rechercher par titre, description ou professeur…',
     notes: 'Notes',
     notesCount: 'notes',

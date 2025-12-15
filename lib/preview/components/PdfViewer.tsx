@@ -3,13 +3,14 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createPluginRegistration } from '@embedpdf/core';
 import { EmbedPDF } from '@embedpdf/core/react';
 import { usePdfiumEngine } from '@embedpdf/engines/react';
 // Import the essential plugins
 import { Viewport, ViewportPluginPackage } from '@embedpdf/plugin-viewport/react';
 import { Scroller, ScrollPluginPackage, useScroll } from '@embedpdf/plugin-scroll/react';
-import { LoaderPluginPackage } from '@embedpdf/plugin-loader/react';
+import { LoaderPluginPackage, useLoaderCapability } from '@embedpdf/plugin-loader/react';
 import { RenderLayer, RenderPluginPackage } from '@embedpdf/plugin-render/react';
 import { ThumbnailsPane, ThumbImg, ThumbnailPluginPackage } from '@embedpdf/plugin-thumbnail/react';
 // Import new plugins
@@ -21,9 +22,10 @@ import { PrintPluginPackage, usePrintCapability } from '@embedpdf/plugin-print/r
 import { ExportPluginPackage, useExportCapability } from '@embedpdf/plugin-export/react';
 import { SpreadPluginPackage, useSpreadCapability, SpreadMode } from '@embedpdf/plugin-spread/react';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/language/LanguageSwitcher';
-import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Maximize2, Printer, Download, Copy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Maximize2, Printer, Download, Copy, PanelRightOpen } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/hooks';
 
 type PdfViewerProps = {
@@ -106,9 +108,11 @@ function createPluginsForUrl(fileUrl: string, includeThumbnails = false) {
 function ThumbnailSidebar({
   isCollapsed,
   onToggle,
+  isMobile = false,
 }: {
   isCollapsed: boolean;
   onToggle: () => void;
+  isMobile?: boolean;
 }) {
   const { t } = useTranslation();
   const { theme, resolvedTheme } = useTheme();
@@ -119,8 +123,118 @@ function ThumbnailSidebar({
     setMounted(true);
   }, []);
 
+  // Override ThumbnailsPane inline height styles (372px -> auto)
+  useEffect(() => {
+    const overrideThumbnailHeights = () => {
+      // Find all divs with inline style containing "height: 372px"
+      const allDivs = document.querySelectorAll('div[style*="372px"]');
+      allDivs.forEach((div) => {
+        const element = div as HTMLElement;
+        const style = element.getAttribute('style') || '';
+        if (style.includes('height: 372px') || style.includes('height:372px')) {
+          // Replace height: 372px with height: auto
+          const newStyle = style
+            .replace(/height:\s*372px;?/gi, 'height: auto;')
+            .replace(/height:372px;?/gi, 'height: auto;');
+          element.setAttribute('style', newStyle);
+        }
+      });
+    };
+
+    // Run immediately and set up MutationObserver to catch dynamically added elements
+    overrideThumbnailHeights();
+
+    const observer = new MutationObserver(() => {
+      overrideThumbnailHeights();
+    });
+
+    // Observe the document body for changes
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style'],
+    });
+
+    // Also run periodically as a fallback
+    const interval = setInterval(overrideThumbnailHeights, 100);
+
+    return () => {
+      observer.disconnect();
+      clearInterval(interval);
+    };
+  }, []);
+
   const isDark = mounted && (resolvedTheme === 'dark' || (theme === 'system' && resolvedTheme === 'dark'));
 
+  // For mobile, render horizontal scrolling thumbnails
+  if (isMobile) {
+    return (
+      <div className="w-full h-full overflow-x-auto overflow-y-hidden flex flex-col items-center justify-center" style={{ whiteSpace: 'nowrap' }}>
+        <div className="inline-flex items-center gap-2 px-2">
+          <ThumbnailsPane>
+            {(m) => {
+              const isActive = state.currentPage === m.pageIndex + 1;
+              return (
+                <div
+                  key={m.pageIndex}
+                  style={{
+                    display: 'inline-flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: `${m.width + 16}px`,
+                    minWidth: `${m.width + 16}px`,
+                    padding: '4px 6px',
+                    cursor: 'pointer',
+                    justifyContent: 'center',
+                  }}
+                  onClick={() =>
+                    provides?.scrollToPage({ pageNumber: m.pageIndex + 1 })
+                  }
+                  className="transition-opacity hover:opacity-80"
+                >
+                  <div
+                    style={{
+                      border: `2px solid ${isActive ? '#3b82f6' : isDark ? '#404040' : '#d4d4d8'}`,
+                      borderRadius: '4px',
+                      width: m.width,
+                      height: m.height,
+                      backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'border-color 0.2s',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                    className={isActive ? 'ring-2 ring-blue-500/50' : ''}
+                  >
+                    <ThumbImg meta={m} />
+                  </div>
+                  <span
+                    style={{
+                      height: m.labelHeight,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '10px',
+                      color: isActive ? '#60a5fa' : isDark ? '#9ca3af' : '#6b7280',
+                      fontWeight: isActive ? '600' : '400',
+                      marginTop: '2px',
+                    }}
+                  >
+                    {m.pageIndex + 1}
+                  </span>
+                </div>
+              );
+            }}
+          </ThumbnailsPane>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop vertical sidebar
   return (
     <div
       className={`relative shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 transition-all duration-300 ease-in-out ${
@@ -220,11 +334,17 @@ function PdfToolbar({
   onToggleSidebar,
   isSidebarCollapsed,
   title,
+  isMobile = false,
+  onZoomChange,
+  onSpreadChange,
 }: {
   onClose?: () => void;
   onToggleSidebar: () => void;
   isSidebarCollapsed: boolean;
   title?: string;
+  isMobile?: boolean;
+  onZoomChange?: () => void;
+  onSpreadChange?: () => void;
 }) {
   const { t } = useTranslation();
   const zoom = useZoomCapability();
@@ -249,6 +369,7 @@ function PdfToolbar({
   const handleZoomIn = () => {
     if (zoom.provides) {
       try {
+        onZoomChange?.();
         zoom.provides.zoomIn();
       } catch (error) {
         console.error('Zoom in error:', error);
@@ -259,6 +380,7 @@ function PdfToolbar({
   const handleZoomOut = () => {
     if (zoom.provides) {
       try {
+        onZoomChange?.();
         zoom.provides.zoomOut();
       } catch (error) {
         console.error('Zoom out error:', error);
@@ -334,6 +456,7 @@ function PdfToolbar({
 
   const handleSpreadChange = (mode: 'none' | 'odd' | 'even') => {
     setSpreadMode(mode);
+    onSpreadChange?.();
     if (spread.provides) {
       if (mode === 'none') {
         spread.provides.setSpreadMode(SpreadMode.None);
@@ -352,122 +475,142 @@ function PdfToolbar({
   const hasSpread = !!spread.provides;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center ${isMobile ? 'flex-row w-full justify-between' : 'flex-row gap-1.5'}`}>
       {/* Zoom Controls */}
-      <div className="flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-800/50 p-1">
-        <button
+      <ButtonGroup className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 overflow-hidden">
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={handleZoomOut}
           disabled={!hasZoom}
-          className="flex h-7 w-7 items-center justify-center rounded text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`${isMobile ? 'h-7 w-7 p-0' : 'h-9 w-9 p-0'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700`}
           aria-label={t('pdfViewer.zoomOut')}
         >
-          <ZoomOut className="h-4 w-4" />
-        </button>
-        <button
+          <ZoomOut className={isMobile ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
+        </Button>
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={handleZoomFit}
           disabled={!hasZoom}
-          className="flex h-7 w-7 items-center justify-center rounded text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`${isMobile ? 'h-7 w-7 p-0' : 'h-9 w-9 p-0'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700`}
           aria-label={t('pdfViewer.zoomFit')}
         >
-          <Maximize2 className="h-4 w-4" />
-        </button>
-        <button
+          <Maximize2 className={isMobile ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
+        </Button>
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={handleZoomIn}
           disabled={!hasZoom}
-          className="flex h-7 w-7 items-center justify-center rounded text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`${isMobile ? 'h-7 w-7 p-0' : 'h-9 w-9 p-0'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700`}
           aria-label={t('pdfViewer.zoomIn')}
         >
-          <ZoomIn className="h-4 w-4" />
-        </button>
-      </div>
+          <ZoomIn className={isMobile ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
+        </Button>
+      </ButtonGroup>
 
       {/* Spread Controls */}
-      <div className="flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-800/50 p-1">
-        <button
+      <ButtonGroup className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 overflow-hidden">
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={() => handleSpreadChange('none')}
-          className={`flex h-7 px-2 items-center justify-center rounded text-xs text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white ${
+          className={`${isMobile ? 'h-7 px-1.5 text-[10px]' : 'h-9 px-2 text-xs'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700 ${
             spreadMode === 'none' ? 'bg-zinc-200 dark:bg-zinc-700' : ''
           }`}
           aria-label={t('pdfViewer.spreadNone')}
         >
           {t('pdfViewer.spreadNone')}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={() => handleSpreadChange('odd')}
-          className={`flex h-7 px-2 items-center justify-center rounded text-xs text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white ${
+          className={`${isMobile ? 'h-7 px-1.5 text-[10px]' : 'h-9 px-2 text-xs'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700 ${
             spreadMode === 'odd' ? 'bg-zinc-200 dark:bg-zinc-700' : ''
           }`}
           aria-label={t('pdfViewer.spreadOdd')}
         >
           {t('pdfViewer.spreadOdd')}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={() => handleSpreadChange('even')}
-          className={`flex h-7 px-2 items-center justify-center rounded text-xs text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white ${
+          className={`${isMobile ? 'h-7 px-1.5 text-[10px]' : 'h-9 px-2 text-xs'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700 ${
             spreadMode === 'even' ? 'bg-zinc-200 dark:bg-zinc-700' : ''
           }`}
           aria-label={t('pdfViewer.spreadEven')}
         >
           {t('pdfViewer.spreadEven')}
-        </button>
-      </div>
+        </Button>
+      </ButtonGroup>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-1 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 p-1">
-        <button
+      <ButtonGroup className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 overflow-hidden">
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={handleCopyText}
           disabled={!hasSelection}
-          className="flex h-7 w-7 items-center justify-center rounded text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`${isMobile ? 'h-7 w-7 p-0' : 'h-9 w-9 p-0'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700`}
           aria-label={t('pdfViewer.copyText')}
         >
-          <Copy className="h-4 w-4" />
-        </button>
-        <button
+          <Copy className={isMobile ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
+        </Button>
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={handlePrint}
           disabled={!hasPrint}
-          className="flex h-7 w-7 items-center justify-center rounded text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`${isMobile ? 'h-7 w-7 p-0' : 'h-9 w-9 p-0'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700`}
           aria-label={t('pdfViewer.print')}
         >
-          <Printer className="h-4 w-4" />
-        </button>
-        <button
+          <Printer className={isMobile ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
+        </Button>
+        <Button
           type="button"
+          variant="outline"
+          size={isMobile ? "sm" : "sm"}
           onClick={handleExportPdf}
           disabled={!hasExport}
-          className="flex h-7 w-7 items-center justify-center rounded text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`${isMobile ? 'h-7 w-7 p-0' : 'h-9 w-9 p-0'} rounded-none border-0 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-700`}
           aria-label={t('pdfViewer.export')}
         >
-          <Download className="h-4 w-4" />
-        </button>
-      </div>
+          <Download className={isMobile ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
+        </Button>
+      </ButtonGroup>
 
-      {/* Sidebar Toggle */}
-      <button
-        type="button"
-        className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 p-0 text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white"
-        onClick={onToggleSidebar}
-        aria-label={isSidebarCollapsed ? t('pdfViewer.showThumbnails') : t('pdfViewer.hideThumbnails')}
-      >
-        {isSidebarCollapsed ? (
-          <ChevronRight className="h-4 w-4" />
-        ) : (
-          <ChevronLeft className="h-4 w-4" />
-        )}
-      </button>
-
-      {/* Close Button */}
-      {onClose && (
+      {/* Sidebar Toggle (desktop only) */}
+      {!isMobile && (
         <button
           type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 p-0 text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-red-50 dark:hover:bg-red-600/20 hover:border-red-300 dark:hover:border-red-600/50 hover:text-red-600 dark:hover:text-red-400"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 p-0 text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white"
+          onClick={onToggleSidebar}
+          aria-label={isSidebarCollapsed ? t('pdfViewer.showThumbnails') : t('pdfViewer.hideThumbnails')}
+        >
+          {isSidebarCollapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </button>
+      )}
+
+      {/* Close Button (desktop only - mobile has it in header) */}
+      {onClose && !isMobile && (
+        <button
+          type="button"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 p-0 text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-red-50 dark:hover:bg-red-600/20 hover:border-red-300 dark:hover:border-red-600/50 hover:text-red-600 dark:hover:text-red-400"
           onClick={onClose}
           aria-label={t('pdfViewer.closeFullscreen')}
         >
@@ -497,6 +640,22 @@ export function PdfViewer({
   
   // Move useState to top level - hooks must be called unconditionally
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [isLoadingPdf, setIsLoadingPdf] = useState(false);
+  const [zoomKey, setZoomKey] = useState(0);
+  const [spreadKey, setSpreadKey] = useState(0);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Avoid hydration mismatch
   useEffect(() => {
@@ -505,6 +664,73 @@ export function PdfViewer({
 
   // Determine if dark mode is active
   const isDark = mounted && (resolvedTheme === 'dark' || (theme === 'system' && resolvedTheme === 'dark'));
+
+  // Track PDF loading progress using fetch
+  useEffect(() => {
+    if (!fileUrl) {
+      setIsLoadingPdf(false);
+      setLoadingProgress(0);
+      return;
+    }
+
+    setIsLoadingPdf(true);
+    setLoadingProgress(0);
+
+    // Track download progress using fetch
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    fetch(fileUrl, { signal })
+      .then((response) => {
+        if (!response.body) {
+          setIsLoadingPdf(false);
+          return;
+        }
+
+        const contentLength = response.headers.get('content-length');
+        const total = contentLength ? parseInt(contentLength, 10) : 0;
+        let loaded = 0;
+
+        const reader = response.body.getReader();
+
+        const pump = (): Promise<void> => {
+          return reader.read().then(({ done, value }) => {
+            if (done) {
+              setLoadingProgress(100);
+              // Small delay to show 100% before hiding
+              setTimeout(() => {
+                setIsLoadingPdf(false);
+              }, 300);
+              return;
+            }
+
+            loaded += value.length;
+            if (total > 0) {
+              const progress = Math.min((loaded / total) * 100, 95); // Cap at 95% until done
+              setLoadingProgress(progress);
+            } else {
+              // If content-length is unknown, show indeterminate progress
+              setLoadingProgress((prev) => Math.min(prev + 5, 90));
+            }
+
+            return pump();
+          });
+        };
+
+        return pump();
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          console.error('PDF loading error:', error);
+          setIsLoadingPdf(false);
+          setLoadingProgress(0);
+        }
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [fileUrl]);
 
   const openInPreviewPage = () => {
     if (!fileUrl) return;
@@ -558,10 +784,29 @@ export function PdfViewer({
 
   if (layoutVariant === 'overlay') {
     return (
-      <div className="relative flex h-full flex-col bg-zinc-950">
+      <div className="relative flex h-full flex-col bg-zinc-50 dark:bg-zinc-950">
+        {/* Loading Progress Overlay */}
+        {isLoadingPdf && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm">
+            <div className="w-full max-w-md px-6">
+              <div className="mb-3 flex items-center justify-between text-sm text-zinc-700 dark:text-zinc-300">
+                <span className="font-medium">{t('pdfViewer.loadingPdfViewer')}</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {Math.round(loadingProgress)}%
+                </span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                <div
+                  className="h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300 ease-out"
+                  style={{ width: `${loadingProgress}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
         <EmbedPDF engine={engine} plugins={plugins}>
           {/* Top Header Bar */}
-          <div className="relative flex items-center justify-between border-b border-zinc-800 bg-zinc-900/95 px-4 py-3 backdrop-blur-sm">
+          <div className="relative flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 px-4 py-3 backdrop-blur-sm">
             {/* Left side - Title and course code */}
             <div className="flex min-w-0 flex-1 items-center gap-3">
               {courseCode && (
@@ -578,33 +823,253 @@ export function PdfViewer({
               </div>
             </div>
 
-            {/* Center - Toolbar controls */}
-            <div className="absolute left-1/2 -translate-x-1/2">
-              <PdfToolbar
-                onClose={onClose}
-                onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                isSidebarCollapsed={isSidebarCollapsed}
-                title={title}
-              />
-            </div>
+            {/* Center - Toolbar controls (desktop only) */}
+            {!isMobile && (
+              <div className="absolute left-1/2 -translate-x-1/2">
+                <PdfToolbar
+                  onClose={onClose}
+                  onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                  isSidebarCollapsed={isSidebarCollapsed}
+                  title={title}
+                  isMobile={false}
+                />
+              </div>
+            )}
 
-            {/* Right side - Language and Theme switchers */}
+            {/* Right side - Language, Theme switchers, and Mobile controls */}
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <ThemeSwitcher />
+              {isMobile && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                    className="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 p-0 text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                    aria-label="Toggle bottom sheet"
+                  >
+                    {isMobileSidebarOpen ? (
+                      <X className="h-4 w-4" />
+                    ) : (
+                      <PanelRightOpen className="h-4 w-4" />
+                    )}
+                  </button>
+                  {onClose && (
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 p-0 text-zinc-700 dark:text-zinc-300 transition-colors hover:bg-red-50 dark:hover:bg-red-600/20 hover:border-red-300 dark:hover:border-red-600/50 hover:text-red-600 dark:hover:text-red-400"
+                      onClick={onClose}
+                      aria-label={t('pdfViewer.closeFullscreen')}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
+          {/* Mobile Bottom Sheet */}
+          <AnimatePresence>
+            {isMobile && isMobileSidebarOpen && (
+              <div className="absolute inset-0 z-40 flex flex-col">
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex-1 bg-black/50"
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                />
+                {/* Bottom Sheet */}
+                <motion.div
+                  initial={{ y: '100%' }}
+                  animate={{ y: 0 }}
+                  exit={{ y: '100%' }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  className="bg-white dark:bg-zinc-900 rounded-t-xl border-t border-zinc-200 dark:border-zinc-800 flex flex-col h-[40vh]"
+                >
+                  {/* Drag Handle */}
+                  <div className="flex justify-center pt-2 pb-1">
+                    <div className="w-12 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                  </div>
+                  
+                  {/* Sheet Header */}
+                  <div className="border-b border-zinc-200 dark:border-zinc-800 px-3 py-2 flex items-center justify-between shrink-0">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                        {title ?? t('pdfViewer.pages')}
+                      </h3>
+                      {title && (
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                          {t('pdfViewer.pages')}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileSidebarOpen(false)}
+                      className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0 ml-2"
+                      aria-label="Close sidebar"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Toolbar in mobile bottom sheet */}
+                  <div className="border-b border-zinc-200 dark:border-zinc-800 px-3 py-2 shrink-0">
+                    <PdfToolbar
+                      onClose={onClose}
+                      onToggleSidebar={() => {}}
+                      isSidebarCollapsed={false}
+                      title={title}
+                      isMobile={true}
+                      onZoomChange={() => setZoomKey((prev) => prev + 1)}
+                      onSpreadChange={() => setSpreadKey((prev) => prev + 1)}
+                    />
+                  </div>
+                  
+                  {/* Thumbnails in mobile bottom sheet */}
+                  <div className="flex-1 min-h-0 w-full">
+                    <div className="h-full w-full overflow-x-auto overflow-y-hidden">
+                      <ThumbnailSidebar
+                        isCollapsed={false}
+                        onToggle={() => {}}
+                        isMobile={true}
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+
           {/* Main Content Area */}
           <div className="flex flex-1 overflow-hidden">
-            {/* Thumbnail Sidebar */}
-            <ThumbnailSidebar
-              isCollapsed={isSidebarCollapsed}
-              onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            />
+            {/* Thumbnail Sidebar (desktop only) */}
+            {!isMobile && (
+              <ThumbnailSidebar
+                isCollapsed={isSidebarCollapsed}
+                onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                isMobile={false}
+              />
+            )}
 
             {/* Main PDF Viewport */}
             <div className="flex-1 min-w-0 bg-zinc-50 dark:bg-zinc-950">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`viewport-overlay-${zoomKey}-${spreadKey}`}
+                  initial={{ opacity: 0.7, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0.7, scale: 0.98 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="h-full w-full"
+                >
+                  <Viewport
+                    style={{
+                      backgroundColor: isDark ? '#09090b' : '#f4f4f5',
+                      height: '100%',
+                    }}
+                  >
+                    <Scroller
+                      renderPage={({ width, height, pageIndex, scale, rotation }) => (
+                        <PagePointerProvider
+                          pageIndex={pageIndex}
+                          scale={scale}
+                          rotation={rotation}
+                          pageWidth={width}
+                          pageHeight={height}
+                        >
+                          <motion.div
+                            key={`page-overlay-${pageIndex}-${spreadKey}`}
+                            initial={{ opacity: 0.8 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.25, ease: 'easeOut' }}
+                            style={{
+                              width,
+                              height,
+                              position: 'relative',
+                              display: 'flex',
+                              justifyContent: 'center',
+                              padding: '2rem 0',
+                            }}
+                          >
+                            {/* Low-resolution base layer for immediate feedback */}
+                            <RenderLayer pageIndex={pageIndex} scale={0.5} />
+                            {/* High-resolution tile layer on top */}
+                            <TilingLayer pageIndex={pageIndex} scale={scale} />
+                            {/* Selection layer for text selection */}
+                            <SelectionLayer pageIndex={pageIndex} scale={scale} />
+                          </motion.div>
+                        </PagePointerProvider>
+                      )}
+                    />
+                  </Viewport>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </EmbedPDF>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative flex h-full min-h-0 flex-col rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm">
+      {/* Loading Progress Overlay */}
+      {isLoadingPdf && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-lg bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm">
+          <div className="w-full max-w-xs px-4">
+            <div className="mb-3 flex items-center justify-between text-sm text-zinc-700 dark:text-zinc-300">
+              <span className="font-medium">{t('pdfViewer.loadingPdfViewer')}</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                {Math.round(loadingProgress)}%
+              </span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+              <div
+                className="h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300 ease-out"
+                style={{ width: `${loadingProgress}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            {title ?? t('common.loading')}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {showPreviewButton && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={openInPreviewPage}
+              className="flex items-center gap-1.5"
+            >
+              <span>{t('pdfViewer.openInPreview')}</span>
+              <span className="text-xs">⤢</span>
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
+        <EmbedPDF engine={engine} plugins={plugins}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`viewport-default-${zoomKey}-${spreadKey}`}
+              initial={{ opacity: 0.7, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0.7, scale: 0.98 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="h-full w-full"
+            >
               <Viewport
                 style={{
                   backgroundColor: isDark ? '#09090b' : '#f4f4f5',
@@ -615,19 +1080,23 @@ export function PdfViewer({
                   renderPage={({ width, height, pageIndex, scale, rotation }) => (
                     <PagePointerProvider
                       pageIndex={pageIndex}
-                      scale={scale}
+              scale={scale}
                       rotation={rotation}
                       pageWidth={width}
                       pageHeight={height}
                     >
-                      <div
+                      <motion.div
+                        key={`page-default-${pageIndex}-${spreadKey}`}
+                        initial={{ opacity: 0.8 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.25, ease: 'easeOut' }}
                         style={{
                           width,
                           height,
                           position: 'relative',
                           display: 'flex',
                           justifyContent: 'center',
-                          padding: '2rem 0',
+                          padding: '0.75rem 0',
                         }}
                       >
                         {/* Low-resolution base layer for immediate feedback */}
@@ -636,91 +1105,13 @@ export function PdfViewer({
                         <TilingLayer pageIndex={pageIndex} scale={scale} />
                         {/* Selection layer for text selection */}
                         <SelectionLayer pageIndex={pageIndex} scale={scale} />
-                      </div>
+                      </motion.div>
                     </PagePointerProvider>
                   )}
                 />
               </Viewport>
-            </div>
-          </div>
-        </EmbedPDF>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex h-full min-h-0 flex-col rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            {title ?? t('common.loading')}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {showPreviewButton && (
-            <>
-              <Button
-            type="button"
-                variant="outline"
-                size="sm"
-                onClick={openInPreviewPage}
-              >
-                {t('pdfViewer.openInPreview')}
-              </Button>
-              {onFullscreen && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-                  onClick={onFullscreen}
-                  aria-label={t('pdfViewer.enterFullscreen')}
-          >
-                  <span className="text-xs">⤢</span>
-          </Button>
-        )}
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
-        <EmbedPDF engine={engine} plugins={plugins}>
-          <Viewport
-            style={{
-              backgroundColor: isDark ? '#09090b' : '#f4f4f5',
-              height: '100%',
-            }}
-          >
-            <Scroller
-              renderPage={({ width, height, pageIndex, scale, rotation }) => (
-                <PagePointerProvider
-                  pageIndex={pageIndex}
-              scale={scale}
-                  rotation={rotation}
-                  pageWidth={width}
-                  pageHeight={height}
-                >
-                  <div
-                    style={{
-                      width,
-                      height,
-                      position: 'relative',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      padding: '0.75rem 0',
-                    }}
-                  >
-                    {/* Low-resolution base layer for immediate feedback */}
-                    <RenderLayer pageIndex={pageIndex} scale={0.5} />
-                    {/* High-resolution tile layer on top */}
-                    <TilingLayer pageIndex={pageIndex} scale={scale} />
-                    {/* Selection layer for text selection */}
-                    <SelectionLayer pageIndex={pageIndex} scale={scale} />
-                  </div>
-                </PagePointerProvider>
-              )}
-            />
-          </Viewport>
+            </motion.div>
+          </AnimatePresence>
         </EmbedPDF>
       </div>
     </div>

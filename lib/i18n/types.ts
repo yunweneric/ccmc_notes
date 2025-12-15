@@ -22,6 +22,7 @@ export interface Translations {
     allSemesters: string;
     allCourses: string;
     clearFilters: string;
+    clearAll: string;
     searchPlaceholder: string;
     notes: string;
     notesCount: string;
