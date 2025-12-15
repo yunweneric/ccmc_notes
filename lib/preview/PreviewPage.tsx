@@ -7,8 +7,11 @@ import { toast } from 'sonner';
 import { PdfViewer } from './components/PdfViewer';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
+import { LanguageSwitcher } from '@/components/language/LanguageSwitcher';
+import { useTranslation } from '@/lib/i18n/hooks';
 
 export function PreviewPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const title = searchParams.get('title') ?? undefined;
   const fileUrl = searchParams.get('fileUrl');
@@ -50,7 +53,7 @@ export function PreviewPage() {
 
     // Show toast only when entering fullscreen and on large screens
     if (newValue && isLargeScreen) {
-      toast.info('Press Escape to exit fullscreen', {
+      toast.info(t('preview.pressEscapeToExit'), {
         duration: 3000,
       });
     }
@@ -62,20 +65,20 @@ export function PreviewPage() {
         <header className="flex items-center justify-between gap-2">
           <div>
             <h1 className="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-              Note preview
+              {t('preview.title')}
             </h1>
             <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-              Optimized for mobile. Use the back button to return to the notes
-              list.
+              {t('preview.description')}
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeSwitcher />
             <Button
               type="button"
               variant="outline"
               size="sm"
-              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              aria-label={isFullscreen ? t('pdfViewer.exitFullscreen') : t('pdfViewer.enterFullscreen')}
               onClick={toggleFullscreen}
             >
               {isFullscreen ? (
@@ -87,7 +90,7 @@ export function PreviewPage() {
               )}
             </Button>
             <Button variant="outline" size="sm">
-              <Link href="/">Back to notes</Link>
+              <Link href="/">{t('preview.backToNotes')}</Link>
             </Button>
           </div>
         </header>
@@ -99,7 +102,7 @@ export function PreviewPage() {
             )}
             {level && semester && (
               <p className="mt-1">
-                Level {level} • Semester {semester}
+                {t('preview.levelSemester', { level, semester })}
               </p>
             )}
             {title && (

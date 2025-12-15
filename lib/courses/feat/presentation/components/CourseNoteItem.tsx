@@ -1,6 +1,7 @@
 'use client';
 
 import type { RawNote } from '../../data/interfaces/course';
+import { useTranslation } from '@/lib/i18n/hooks';
 
 type CourseNoteItemProps = {
   note: RawNote;
@@ -17,10 +18,11 @@ export function CourseNoteItem({
   course,
   onOpen,
 }: CourseNoteItemProps) {
+  const { t, locale } = useTranslation();
   const addedDate = new Date(note.added_date);
   const formattedDate = Number.isNaN(addedDate.getTime())
     ? note.added_date
-    : addedDate.toLocaleDateString(undefined, {
+    : addedDate.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
@@ -55,15 +57,15 @@ export function CourseNoteItem({
           </p>
         </div>
         <span className="shrink-0 rounded-full bg-zinc-900 dark:bg-zinc-100 px-3 py-1 text-xs font-medium text-white dark:text-zinc-900">
-          Open
+          {t('common.open')}
         </span>
       </div>
       <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
         <span className="rounded-full bg-blue-50 dark:bg-blue-950 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-300">
-          Level {level}
+          {t('home.level')} {level}
         </span>
         <span className="rounded-full bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
-          Semester {semester}
+          {t('home.semester')} {semester}
         </span>
         <span className="rounded-full bg-purple-50 dark:bg-purple-950 px-2 py-0.5 text-[11px] font-medium text-purple-700 dark:text-purple-300">
           {course}

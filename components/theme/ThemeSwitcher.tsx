@@ -4,6 +4,7 @@ import { Moon, Sun, Monitor, Check } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/lib/i18n/hooks';
 import {
   Select,
   SelectContent,
@@ -13,6 +14,7 @@ import {
 } from '@/components/ui/select';
 
 export function ThemeSwitcher() {
+  const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -55,7 +57,7 @@ export function ThemeSwitcher() {
           <div className="flex items-center justify-between w-full gap-2">
             <div className="flex items-center gap-2">
               <Sun className="h-4 w-4" />
-              <span>Light</span>
+              <span>{t('theme.light')}</span>
             </div>
             {currentTheme === 'light' && (
               <Check className="h-4 w-4 text-primary" />
@@ -66,7 +68,7 @@ export function ThemeSwitcher() {
           <div className="flex items-center justify-between w-full gap-2">
             <div className="flex items-center gap-2">
               <Moon className="h-4 w-4" />
-              <span>Dark</span>
+              <span>{t('theme.dark')}</span>
             </div>
             {currentTheme === 'dark' && (
               <Check className="h-4 w-4 text-primary" />
@@ -77,7 +79,7 @@ export function ThemeSwitcher() {
           <div className="flex items-center justify-between w-full gap-2">
             <div className="flex items-center gap-2">
               <Monitor className="h-4 w-4" />
-              <span>System</span>
+              <span>{t('theme.system')}</span>
             </div>
             {currentTheme === 'system' && (
               <Check className="h-4 w-4 text-primary" />

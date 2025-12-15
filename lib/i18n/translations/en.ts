@@ -33,6 +33,9 @@ export const en: Translations = {
     semester: 'Semester',
     course: 'Course',
     showingNotesFor: 'Showing notes for',
+    adjustFilters: 'Adjust level, semester, course, and search.',
+    selectNoteToOpen: 'Select a note to open it on the preview page.',
+    closeFilters: 'Close',
   },
   preview: {
     title: 'Note preview',

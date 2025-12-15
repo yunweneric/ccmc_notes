@@ -14,6 +14,7 @@ import { RenderLayer, RenderPluginPackage } from '@embedpdf/plugin-render/react'
 import { ThumbnailsPane, ThumbImg, ThumbnailPluginPackage } from '@embedpdf/plugin-thumbnail/react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/hooks';
 
 type PdfViewerProps = {
   fileUrl: string | null;
@@ -81,6 +82,7 @@ function ThumbnailSidebar({
   isCollapsed: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
   const { state, provides } = useScroll();
 
   return (
@@ -93,7 +95,7 @@ function ThumbnailSidebar({
       <button
         onClick={onToggle}
         className="absolute -right-3 top-4 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800 text-zinc-300 shadow-lg transition-colors hover:bg-zinc-700 hover:text-white"
-        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={isCollapsed ? t('pdfViewer.showThumbnails') : t('pdfViewer.hideThumbnails')}
       >
         {isCollapsed ? (
           <ChevronRight className="h-4 w-4" />
@@ -107,7 +109,7 @@ function ThumbnailSidebar({
           {/* Sidebar Header */}
           <div className="border-b border-zinc-800 px-3 py-2.5">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-              Pages
+              {t('pdfViewer.pages')}
             </h3>
           </div>
 
@@ -182,6 +184,7 @@ export function PdfViewer({
   onClose,
   onFullscreen,
 }: PdfViewerProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -220,9 +223,9 @@ export function PdfViewer({
   if (!fileUrl) {
     return (
       <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-        <p className="font-medium text-zinc-700 dark:text-zinc-300">No note selected</p>
+        <p className="font-medium text-zinc-700 dark:text-zinc-300">{t('pdfViewer.noNoteSelected')}</p>
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-          Choose a note from the list to view its PDF here.
+          {t('pdfViewer.chooseNoteFromList')}
         </p>
       </div>
     );
@@ -232,7 +235,7 @@ export function PdfViewer({
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 text-xs text-zinc-500 dark:text-zinc-400">
-        Loading PDF viewer…
+        {t('pdfViewer.loadingPdfViewer')}
       </div>
     );
   }
@@ -242,9 +245,9 @@ export function PdfViewer({
   if (!engine || plugins.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/50 p-4 text-center text-xs text-red-700 dark:text-red-400">
-        <p className="font-medium">Unable to initialize PDF viewer.</p>
+        <p className="font-medium">{t('pdfViewer.unableToInitialize')}</p>
         <p className="mt-1 text-[11px] text-red-500 dark:text-red-500">
-          The PDF engine failed to load. Please check your network connection and refresh the page.
+          {t('pdfViewer.engineFailedToLoad')}
         </p>
       </div>
     );
@@ -274,7 +277,7 @@ export function PdfViewer({
               type="button"
               className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-zinc-800/50 p-0 text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white"
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              aria-label={isSidebarCollapsed ? 'Show thumbnails' : 'Hide thumbnails'}
+              aria-label={isSidebarCollapsed ? t('pdfViewer.showThumbnails') : t('pdfViewer.hideThumbnails')}
             >
               {isSidebarCollapsed ? (
                 <ChevronRight className="h-4 w-4" />
@@ -287,7 +290,7 @@ export function PdfViewer({
                 type="button"
                 className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-zinc-800/50 p-0 text-zinc-300 transition-colors hover:bg-red-600/20 hover:border-red-600/50 hover:text-red-400"
                 onClick={onClose}
-                aria-label="Close fullscreen"
+                aria-label={t('pdfViewer.closeFullscreen')}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -340,7 +343,7 @@ export function PdfViewer({
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            {title ?? 'Selected note'}
+            {title ?? t('common.loading')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -352,7 +355,7 @@ export function PdfViewer({
                 size="sm"
                 onClick={openInPreviewPage}
               >
-                Open in preview
+                {t('pdfViewer.openInPreview')}
               </Button>
               {onFullscreen && (
                 <Button
@@ -360,7 +363,7 @@ export function PdfViewer({
                   variant="outline"
                   size="sm"
                   onClick={onFullscreen}
-                  aria-label="Open in fullscreen"
+                  aria-label={t('pdfViewer.enterFullscreen')}
                 >
                   <span className="text-xs">⤢</span>
                 </Button>

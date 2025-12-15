@@ -33,6 +33,9 @@ export interface Translations {
     semester: string;
     course: string;
     showingNotesFor: string;
+    adjustFilters: string;
+    selectNoteToOpen: string;
+    closeFilters: string;
   };
   preview: {
     title: string;
