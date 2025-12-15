@@ -12,6 +12,7 @@ export interface Translations {
     search: string;
     all: string;
     shown: string;
+    reload: string;
   };
   home: {
     title: string;

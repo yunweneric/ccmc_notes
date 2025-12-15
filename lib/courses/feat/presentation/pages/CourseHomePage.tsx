@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { PdfViewer } from "@/lib/preview/components/PdfViewer";
@@ -11,12 +11,14 @@ import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { useCourses } from "../../hooks/useCourses";
 import { CourseNoteItem } from "../components/CourseNoteItem";
-import { X } from "lucide-react";
+import { X, AlertCircle, RefreshCw } from "lucide-react";
 
 export function CourseHomePage() {
   const { t, locale } = useTranslation();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [visibleNotesCount, setVisibleNotesCount] = useState(7);
+  const notesContainerRef = useRef<HTMLDivElement>(null);
 
   const toggleFullscreen = () => {
     setIsFullscreen((v) => !v);
@@ -46,6 +48,7 @@ export function CourseHomePage() {
       setSearchQuery,
       handleResetFilters,
       handleSelectNote,
+      reloadNotes,
     },
   } = useCourses();
 
@@ -63,6 +66,47 @@ export function CourseHomePage() {
     { value: '', label: t('home.allCourses') },
     ...courses.map((course) => ({ value: course, label: course })),
   ];
+
+  // Flatten all notes from all groups into a single array with group info
+  const allNotes = useMemo(() => {
+    const notes: Array<{
+      note: typeof filteredGroups[0]['notes'][0];
+      group: typeof filteredGroups[0];
+    }> = [];
+    filteredGroups.forEach((group) => {
+      group.notes.forEach((note) => {
+        notes.push({ note, group });
+      });
+    });
+    return notes;
+  }, [filteredGroups]);
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleNotesCount(7);
+  }, [selectedLevel, selectedSemester, selectedCourse, searchQuery]);
+
+  // Handle scroll to load more
+  useEffect(() => {
+    const container = notesContainerRef.current;
+    if (!container || allNotes.length <= visibleNotesCount) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      // Load more when within 100px of bottom
+      if (scrollHeight - scrollTop - clientHeight < 100) {
+        setVisibleNotesCount((prev) => Math.min(prev + 7, allNotes.length));
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [allNotes.length, visibleNotesCount]);
+
+  // Get visible notes
+  const visibleNotes = useMemo(() => {
+    return allNotes.slice(0, visibleNotesCount);
+  }, [allNotes, visibleNotesCount]);
 
   return (
     <div className="flex h-screen bg-zinc-50 dark:bg-zinc-950 px-4 py-6 text-zinc-900 dark:text-zinc-100 overflow-hidden">
@@ -91,7 +135,57 @@ export function CourseHomePage() {
           </div>
         </header>
 
-        {recentCourses.length > 0 && (
+        {/* Recent courses section with shimmer loader */}
+        {error ? (
+          <section className="flex shrink-0 flex-col gap-3 rounded-lg border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-950/20 p-4 shadow-sm">
+            <div className="flex items-center gap-2 text-xs text-red-700 dark:text-red-400">
+              <AlertCircle className="h-4 w-4" />
+              <span className="font-medium">{t('home.unableToLoadNotes')}</span>
+            </div>
+            <p className="text-xs text-red-600 dark:text-red-500">{error}</p>
+            <Button
+              type="button"
+              onClick={() => reloadNotes()}
+              variant="outline"
+              size="sm"
+              className="inline-flex items-center gap-2 self-start border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              {t('common.reload')}
+            </Button>
+          </section>
+        ) : loading ? (
+          <section className="flex shrink-0 flex-col gap-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 shadow-sm">
+            <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
+              <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                {t('home.recentlyAddedCourses')}
+              </span>
+              <span className="h-4 w-12 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></span>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-1">
+              {[1, 2, 3, 4].map((idx) => (
+                <div
+                  key={idx}
+                  className="min-w-[16rem] rounded-lg border border-zinc-200 dark:border-zinc-800 px-3 py-2 relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 animate-shimmer"></div>
+                  <div className="relative">
+                    <div className="h-4 w-3/4 mb-2 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                    <div className="h-3 w-full mb-1 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                    <div className="h-3 w-5/6 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                    <div className="mt-2 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <div className="h-5 w-16 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
+                        <div className="h-5 w-20 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
+                      </div>
+                      <div className="h-4 w-20 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : recentCourses.length > 0 && (
           <section className="flex shrink-0 flex-col gap-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 shadow-sm">
             <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
               <span className="font-medium text-zinc-800 dark:text-zinc-200">
@@ -421,13 +515,70 @@ export function CourseHomePage() {
 
             <div className="flex min-h-0 flex-1 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
               {error ? (
-                <div className="flex h-full flex-col items-center justify-center gap-1 p-4 text-center text-sm text-red-600 dark:text-red-400">
-                  <p className="font-medium">{t('home.unableToLoadNotes')}</p>
-                  <p className="text-xs text-red-500 dark:text-red-500">{error}</p>
+                <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6">
+                  <div className="flex flex-col items-center gap-3 text-center max-w-sm">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
+                      <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                        {t('home.unableToLoadNotes')}
+                      </p>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                        {error}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => reloadNotes()}
+                    className="inline-flex items-center gap-2"
+                    variant="outline"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    {t('common.reload')}
+                  </Button>
                 </div>
               ) : loading ? (
-                <div className="flex h-full items-center justify-center text-sm text-zinc-500 dark:text-zinc-400">
-                  {t('home.loadingNotes')}
+                <div className="h-full w-full overflow-auto p-3">
+                  {/* Skeleton loader for note groups */}
+                  {[1, 2, 3].map((groupIdx) => (
+                    <div key={groupIdx} className="mb-3 last:mb-0 w-full">
+                      {/* Group header skeleton */}
+                      <div className="mb-2 flex items-center gap-2 w-full">
+                        <div className="h-5 w-20 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                        <div className="h-5 w-24 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                        <div className="h-5 flex-1 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                      </div>
+                      {/* Note items skeleton */}
+                      <ul className="space-y-2 w-full">
+                        {[1, 2, 3].map((noteIdx) => (
+                          <li
+                            key={noteIdx}
+                            className="flex flex-col gap-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 relative overflow-hidden w-full"
+                          >
+                            <div className="absolute inset-0 animate-shimmer"></div>
+                            <div className="relative w-full">
+                              <div className="flex items-start justify-between gap-2 w-full">
+                                <div className="min-w-0 flex-1">
+                                  <div className="h-4 w-3/4 rounded bg-zinc-200 dark:bg-zinc-800 mb-2"></div>
+                                  <div className="h-3 w-full rounded bg-zinc-200 dark:bg-zinc-800 mb-1"></div>
+                                  <div className="h-3 w-5/6 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                                </div>
+                                <div className="h-6 w-16 rounded-full bg-zinc-200 dark:bg-zinc-800 shrink-0"></div>
+                              </div>
+                              <div className="mt-1 flex flex-wrap items-center gap-2 w-full">
+                                <div className="h-5 w-16 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
+                                <div className="h-5 w-20 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
+                                <div className="h-5 w-24 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
+                                <div className="ml-auto h-4 w-32 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
                 </div>
               ) : filteredGroups.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center gap-1 p-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
@@ -437,37 +588,58 @@ export function CourseHomePage() {
                   </p>
                 </div>
               ) : (
-                <div className="h-full overflow-auto p-3">
-                  {filteredGroups.map((group) => (
-                    <div
-                      key={`${group.level}-${group.semester}-${group.course}`}
-                      className="mb-3 last:mb-0"
-                    >
-                      <div className="mb-2 flex items-center gap-2 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                        <span className="rounded bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-zinc-700 dark:text-zinc-300">
-                          {t('home.level')} {group.level}
-                        </span>
-                        <span className="rounded bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-zinc-700 dark:text-zinc-300">
-                          {t('home.semester')} {group.semester}
-                        </span>
-                        <span className="truncate text-zinc-800 dark:text-zinc-200">
-                          {group.course}
-                        </span>
-                      </div>
-                      <ul className="space-y-2">
-                        {group.notes.map((note) => (
-                          <CourseNoteItem
-                            key={`${note.title}-${note.added_date}-${note.file_url}`}
-                            note={note}
-                            level={group.level}
-                            semester={group.semester}
-                            course={group.course}
-                            onOpen={() => handleSelectNote(group, note)}
-                          />
-                        ))}
-                      </ul>
+                <div 
+                  ref={notesContainerRef}
+                  className="h-full overflow-auto p-3"
+                >
+                  {visibleNotes.length === 0 ? (
+                    <div className="flex h-full flex-col items-center justify-center gap-1 p-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                      <p className="font-medium text-zinc-700 dark:text-zinc-300">{t('home.noNotesFound')}</p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-500">
+                        {t('home.tryAdjustingFilters')}
+                      </p>
                     </div>
-                  ))}
+                  ) : (
+                    <>
+                      {visibleNotes.map(({ note, group }, index) => {
+                        // Check if this is the first note of a new group
+                        const isFirstInGroup = index === 0 || 
+                          visibleNotes[index - 1].group.course_code !== group.course_code;
+                        
+                        return (
+                          <div key={`${note.title}-${note.added_date}-${note.file_url}`} className={isFirstInGroup && index > 0 ? "mt-3" : ""}>
+                            {isFirstInGroup && (
+                              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                                <span className="rounded bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-zinc-700 dark:text-zinc-300">
+                                  {t('home.level')} {group.level}
+                                </span>
+                                <span className="rounded bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-zinc-700 dark:text-zinc-300">
+                                  {t('home.semester')} {group.semester}
+                                </span>
+                                <span className="truncate text-zinc-800 dark:text-zinc-200">
+                                  {group.course}
+                                </span>
+                              </div>
+                            )}
+                            <div className={isFirstInGroup ? "" : "mt-2"}>
+                              <CourseNoteItem
+                                note={note}
+                                level={group.level}
+                                semester={group.semester}
+                                course={group.course}
+                                onOpen={() => handleSelectNote(group, note)}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {visibleNotesCount < allNotes.length && (
+                        <div className="mt-4 flex items-center justify-center py-2">
+                          <div className="h-1 w-1 animate-pulse rounded-full bg-zinc-400 dark:bg-zinc-600"></div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               )}
             </div>

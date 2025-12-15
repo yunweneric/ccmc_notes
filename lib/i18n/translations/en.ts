@@ -12,6 +12,7 @@ export const en: Translations = {
     search: 'Search',
     all: 'All',
     shown: 'shown',
+    reload: 'Reload',
   },
   home: {
     title: 'CCMC Notes Library',

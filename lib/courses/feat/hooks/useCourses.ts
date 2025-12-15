@@ -25,21 +25,21 @@ export function useCourses() {
   const [isMobile, setIsMobile] = useState(false);
   const [defaultsInitialized, setDefaultsInitialized] = useState(false);
 
-  useEffect(() => {
-    const loadNotes = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const notes = await fetchCourseNotes();
-        setData(notes);
-      } catch (err) {
-        console.error(err);
-        setError('Could not load notes. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadNotes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const notes = await fetchCourseNotes();
+      setData(notes);
+    } catch (err) {
+      console.error(err);
+      setError('Could not load notes. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     void loadNotes();
   }, []);
 
@@ -213,6 +213,7 @@ export function useCourses() {
       setSearchQuery,
       handleResetFilters,
       handleSelectNote,
+      reloadNotes: loadNotes,
     },
   };
 }

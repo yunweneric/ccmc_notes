@@ -824,19 +824,26 @@ export function PdfViewer({
       <div className="relative flex h-full flex-col bg-zinc-50 dark:bg-zinc-950">
         {/* Loading Progress Overlay */}
         {isLoadingPdf && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm">
-            <div className="w-full max-w-md px-6">
-              <div className="mb-3 flex items-center justify-between text-sm text-zinc-700 dark:text-zinc-300">
-                <span className="font-medium">{t('pdfViewer.loadingPdfViewer')}</span>
-                <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {Math.round(loadingProgress)}%
-                </span>
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md">
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative">
+                <div className="h-16 w-16 animate-spin rounded-full border-4 border-zinc-200 dark:border-zinc-800 border-t-blue-600 dark:border-t-blue-500"></div>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-                <div
-                  className="h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300 ease-out"
-                  style={{ width: `${loadingProgress}%` }}
-                />
+              <div className="flex flex-col items-center gap-2 min-w-[200px]">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  {t('pdfViewer.loadingPdfViewer')}
+                </p>
+                <div className="w-full">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                    <div
+                      className="h-full bg-green-600 dark:bg-green-500 transition-all duration-300 ease-out rounded-full"
+                      style={{ width: `${loadingProgress}%` }}
+                    />
+                  </div>
+                  <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                    {Math.round(loadingProgress)}%
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -1057,19 +1064,26 @@ export function PdfViewer({
     <div className="relative flex h-full min-h-0 flex-col rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm">
       {/* Loading Progress Overlay */}
       {isLoadingPdf && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-lg bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm">
-          <div className="w-full max-w-xs px-4">
-            <div className="mb-3 flex items-center justify-between text-sm text-zinc-700 dark:text-zinc-300">
-              <span className="font-medium">{t('pdfViewer.loadingPdfViewer')}</span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                {Math.round(loadingProgress)}%
-              </span>
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-lg bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md">
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative">
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-zinc-200 dark:border-zinc-800 border-t-blue-600 dark:border-t-blue-500"></div>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-              <div
-                className="h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300 ease-out"
-                style={{ width: `${loadingProgress}%` }}
-              />
+            <div className="flex flex-col items-center gap-2 min-w-[180px]">
+              <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                {t('pdfViewer.loadingPdfViewer')}
+              </p>
+              <div className="w-full">
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                  <div
+                    className="h-full bg-green-600 dark:bg-green-500 transition-all duration-300 ease-out rounded-full"
+                    style={{ width: `${loadingProgress}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                  {Math.round(loadingProgress)}%
+                </p>
+              </div>
             </div>
           </div>
         </div>
