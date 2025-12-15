@@ -130,24 +130,32 @@ function ThumbnailSidebar({
       const allDivs = document.querySelectorAll('div[style*="372px"]');
       allDivs.forEach((div) => {
         const element = div as HTMLElement;
-        const style = element.getAttribute('style') || '';
-        // Check if style contains height: 372px in various formats
-        if (style.includes('372px') && (style.includes('height') || style.includes('height:'))) {
-          // Replace height: 372px with height: auto (handle various formats)
-          let newStyle = style
-            .replace(/height:\s*372px\s*;?/gi, 'height: auto;')
-            .replace(/height:372px\s*;?/gi, 'height: auto;')
-            .replace(/height\s*:\s*372px\s*;?/gi, 'height: auto;');
+        const computedHeight = window.getComputedStyle(element).height;
+        const inlineStyle = element.getAttribute('style') || '';
+        
+        // Check if element has height: 372px in inline style or computed style
+        if (inlineStyle.includes('372px') || computedHeight === '372px') {
+          // Directly set height to auto using style property (overrides inline styles)
+          element.style.height = 'auto';
           
-          // Ensure we don't duplicate height property
-          const heightMatches = newStyle.match(/height:\s*auto\s*;?/gi);
-          if (heightMatches && heightMatches.length > 1) {
-            // Remove duplicates, keep only the last one
-            newStyle = newStyle.replace(/height:\s*auto\s*;?/gi, '');
-            newStyle = newStyle.trim() + (newStyle.trim().endsWith(';') ? '' : ';') + ' height: auto;';
+          // Also update the style attribute to persist the change
+          if (inlineStyle) {
+            let newStyle = inlineStyle
+              .replace(/height:\s*372px\s*;?/gi, '')
+              .replace(/height:372px\s*;?/gi, '')
+              .replace(/height\s*:\s*372px\s*;?/gi, '');
+            
+            // Clean up any double semicolons or trailing/leading issues
+            newStyle = newStyle.replace(/;\s*;/g, ';').trim();
+            if (newStyle && !newStyle.endsWith(';')) {
+              newStyle += ';';
+            }
+            newStyle += ' height: auto;';
+            
+            element.setAttribute('style', newStyle);
+          } else {
+            element.setAttribute('style', 'height: auto;');
           }
-          
-          element.setAttribute('style', newStyle);
         }
       });
     };
