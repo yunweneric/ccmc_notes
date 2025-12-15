@@ -58,6 +58,19 @@ export interface Translations {
     closeFullscreen: string;
     enterFullscreen: string;
     exitFullscreen: string;
+    zoomIn: string;
+    zoomOut: string;
+    zoomFit: string;
+    zoomActual: string;
+    print: string;
+    export: string;
+    exportPdf: string;
+    exportImage: string;
+    spread: string;
+    spreadNone: string;
+    spreadOdd: string;
+    spreadEven: string;
+    copyText: string;
   };
   theme: {
     light: string;

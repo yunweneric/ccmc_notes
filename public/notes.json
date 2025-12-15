@@ -57,5 +57,432 @@
         "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
       }
     ]
+  },
+  {
+    "level": "200",
+    "semester": "1",
+    "course_code": "CHEM201",
+    "course": "Chemistry 201",
+    "notes": [
+      {
+        "title": "Lecture 1 – Chemical Bonding",
+        "description": "Covalent, ionic, and metallic bonding principles.",
+        "lecturer_name": "Dr. Alice Johnson",
+        "added_date": "2025-09-12",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "2",
+    "course_code": "BIOL102",
+    "course": "Biology 102",
+    "notes": [
+      {
+        "title": "Practical – Cell Structure",
+        "description": "Microscopy and identifying cell organelles.",
+        "lecturer_name": "Dr. Ahmed Musa",
+        "added_date": "2025-09-25",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "300",
+    "semester": "1",
+    "course_code": "ENG301",
+    "course": "Engineering 301",
+    "notes": [
+      {
+        "title": "Lecture 3 – Thermodynamics Introduction",
+        "description": "First law of thermodynamics, basic definitions.",
+        "lecturer_name": "Prof. Richard Tago",
+        "added_date": "2025-10-15",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "200",
+    "semester": "1",
+    "course_code": "STAT201",
+    "course": "Statistics 201",
+    "notes": [
+      {
+        "title": "Lecture 2 – Probability Distributions",
+        "description": "Discrete vs continuous probability, examples.",
+        "lecturer_name": "Dr. Funmi Bello",
+        "added_date": "2025-09-23",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "300",
+    "semester": "2",
+    "course_code": "ACC302",
+    "course": "Accounting 302",
+    "notes": [
+      {
+        "title": "Lecture 1 – Double Entry Bookkeeping",
+        "description": "Standards and principles of bookkeeping.",
+        "lecturer_name": "Dr. Isaac Mensah",
+        "added_date": "2025-10-07",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "400",
+    "semester": "2",
+    "course_code": "MGT402",
+    "course": "Management 402",
+    "notes": [
+      {
+        "title": "Lecture 1 – Organisational Structure",
+        "description": "Types and features of organisational structures.",
+        "lecturer_name": "Dr. Kwame Ackah",
+        "added_date": "2025-11-01",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "2",
+    "course_code": "ENGL102",
+    "course": "English 102",
+    "notes": [
+      {
+        "title": "Tutorial – Essay Writing Basics",
+        "description": "Thesis statements, supporting arguments, conclusion.",
+        "lecturer_name": "Ms. Sarah Boateng",
+        "added_date": "2025-10-02",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "300",
+    "semester": "1",
+    "course_code": "FIN301",
+    "course": "Finance 301",
+    "notes": [
+      {
+        "title": "Lecture 4 – Investment Strategies",
+        "description": "Overview of stock, bonds, time value of money.",
+        "lecturer_name": "Dr. Benjamin Agyei",
+        "added_date": "2025-10-12",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      },
+      {
+        "title": "Quiz – Risk Analysis",
+        "description": "Short quiz on portfolio risk and diversification.",
+        "lecturer_name": "Dr. Benjamin Agyei",
+        "added_date": "2025-10-25",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "1",
+    "course_code": "GEO101",
+    "course": "Geography 101",
+    "notes": [
+      {
+        "title": "Lecture 1 – Introduction to Physical Geography",
+        "description": "Earth structure, weather and climate basics.",
+        "lecturer_name": "Dr. Linda Opoku",
+        "added_date": "2025-09-13",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "200",
+    "semester": "2",
+    "course_code": "PSY202",
+    "course": "Psychology 202",
+    "notes": [
+      {
+        "title": "Lecture 3 – Cognitive Psychology",
+        "description": "Processes of perception, memory, and attention.",
+        "lecturer_name": "Dr. Annika Mensimah",
+        "added_date": "2025-10-20",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "200",
+    "semester": "1",
+    "course_code": "SOC201",
+    "course": "Sociology 201",
+    "notes": [
+      {
+        "title": "Lecture 2 – Social Institutions",
+        "description": "Family, religion, education, government.",
+        "lecturer_name": "Prof. George Howard",
+        "added_date": "2025-09-19",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "300",
+    "semester": "2",
+    "course_code": "PHIL303",
+    "course": "Philosophy 303",
+    "notes": [
+      {
+        "title": "Lecture 1 – Ethics and Morality",
+        "description": "Overview of ethical theories and applications.",
+        "lecturer_name": "Dr. Maxine Owusu",
+        "added_date": "2025-11-11",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "1",
+    "course_code": "ART105",
+    "course": "Art 105",
+    "notes": [
+      {
+        "title": "Workshop – Drawing Fundamentals",
+        "description": "Sketching, shading, and forms practice.",
+        "lecturer_name": "Ms. Martha Tekyiwa",
+        "added_date": "2025-09-27",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "200",
+    "semester": "2",
+    "course_code": "LAW203",
+    "course": "Law 203",
+    "notes": [
+      {
+        "title": "Lecture 5 – Contract Law",
+        "description": "Agreements, enforceability, and breach.",
+        "lecturer_name": "Prof. Isaac Lartey",
+        "added_date": "2025-10-29",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "400",
+    "semester": "1",
+    "course_code": "NURS401",
+    "course": "Nursing 401",
+    "notes": [
+      {
+        "title": "Practical – Patient Care Procedures",
+        "description": "Hands-on patient care, infection control.",
+        "lecturer_name": "Dr. Patricia Adu",
+        "added_date": "2025-09-17",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "2",
+    "course_code": "MATH102",
+    "course": "Math 102",
+    "notes": [
+      {
+        "title": "Lecture 6 – Calculus Basics",
+        "description": "Limits, derivatives, introduction to integration.",
+        "lecturer_name": "Dr. John Doe",
+        "added_date": "2025-10-20",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "300",
+    "semester": "1",
+    "course_code": "CS301",
+    "course": "Computer Science 301",
+    "notes": [
+      {
+        "title": "Lecture 10 – Algorithms Analysis",
+        "description": "Big O notation, space and time complexity.",
+        "lecturer_name": "Prof. Michael Lee",
+        "added_date": "2025-11-05",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "1",
+    "course_code": "HIST101",
+    "course": "History 101",
+    "notes": [
+      {
+        "title": "Lecture 2 – Ancient Civilisations",
+        "description": "Overview of Mesopotamia, Egypt and Greece.",
+        "lecturer_name": "Ms. Hannah Asare",
+        "added_date": "2025-09-22",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "200",
+    "semester": "2",
+    "course_code": "ECON202",
+    "course": "Economics 202",
+    "notes": [
+      {
+        "title": "Lecture 1 – Market Structures",
+        "description": "Perfect competition, monopoly, oligopoly.",
+        "lecturer_name": "Dr. Benjamin Sarpong",
+        "added_date": "2025-10-13",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "400",
+    "semester": "2",
+    "course_code": "COMP402",
+    "course": "Computing 402",
+    "notes": [
+      {
+        "title": "Lecture 2 – Machine Learning",
+        "description": "Supervised, unsupervised algorithms.",
+        "lecturer_name": "Dr. Nana Dede",
+        "added_date": "2025-11-14",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "300",
+    "semester": "2",
+    "course_code": "LANG301",
+    "course": "Language 301",
+    "notes": [
+      {
+        "title": "Seminar – Linguistic Anthropology",
+        "description": "Language and culture, evolution of dialects.",
+        "lecturer_name": "Ms. Ama Osei",
+        "added_date": "2025-10-30",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "2",
+    "course_code": "PHYS102",
+    "course": "Physics 102",
+    "notes": [
+      {
+        "title": "Laboratory – Electricity",
+        "description": "Basic circuit construction and analysis.",
+        "lecturer_name": "Dr. Jane Smith",
+        "added_date": "2025-10-19",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "400",
+    "semester": "1",
+    "course_code": "MED401",
+    "course": "Medicine 401",
+    "notes": [
+      {
+        "title": "Lecture 3 – Cardiovascular System",
+        "description": "Heart anatomy, blood flow, and regulation.",
+        "lecturer_name": "Dr. Francis Atta",
+        "added_date": "2025-09-30",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "200",
+    "semester": "1",
+    "course_code": "MUS201",
+    "course": "Music 201",
+    "notes": [
+      {
+        "title": "Practical – Music Theory",
+        "description": "Major/minor scales, rhythm, intervals.",
+        "lecturer_name": "Mr. Kwesi Adomako",
+        "added_date": "2025-09-26",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "300",
+    "semester": "2",
+    "course_code": "SOC302",
+    "course": "Sociology 302",
+    "notes": [
+      {
+        "title": "Lecture 4 – Social Change",
+        "description": "Technological change, globalization effects.",
+        "lecturer_name": "Prof. George Howard",
+        "added_date": "2025-11-10",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "400",
+    "semester": "2",
+    "course_code": "PSY403",
+    "course": "Psychology 403",
+    "notes": [
+      {
+        "title": "Tutorial – Clinical Interview Skills",
+        "description": "Assessment and diagnosis conversations.",
+        "lecturer_name": "Dr. Annika Mensimah",
+        "added_date": "2025-11-29",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "200",
+    "semester": "2",
+    "course_code": "CHEM202",
+    "course": "Chemistry 202",
+    "notes": [
+      {
+        "title": "Laboratory – Organic Synthesis",
+        "description": "Synthesis of basic organic compounds.",
+        "lecturer_name": "Dr. Alice Johnson",
+        "added_date": "2025-10-22",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "1",
+    "course_code": "FREN101",
+    "course": "French 101",
+    "notes": [
+      {
+        "title": "Workshop – French Pronunciation",
+        "description": "Alphabet, accents, pronunciation rules.",
+        "lecturer_name": "Ms. Genevieve Kouassi",
+        "added_date": "2025-09-18",
+        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+      }
+    ]
   }
 ]

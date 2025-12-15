@@ -61,6 +61,24 @@ export function PreviewPage() {
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950 px-4 py-6 text-zinc-900 dark:text-zinc-100">
+      {/* Fullscreen toggle button - fixed in top right */}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="fixed right-4 top-4 z-50 bg-white dark:bg-zinc-900 shadow-lg"
+        aria-label={isFullscreen ? t('pdfViewer.exitFullscreen') : t('pdfViewer.enterFullscreen')}
+        onClick={toggleFullscreen}
+      >
+        {isFullscreen ? (
+          // simple \"collapse\" icon
+          <span className="text-lg leading-none">⤺</span>
+        ) : (
+          // simple \"expand\" icon
+          <span className="text-lg leading-none">⤢</span>
+        )}
+      </Button>
+
       <main className="mx-auto flex w-full max-w-4xl flex-col gap-4">
         <header className="flex items-center justify-between gap-2">
           <div>
@@ -74,21 +92,6 @@ export function PreviewPage() {
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
             <ThemeSwitcher />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              aria-label={isFullscreen ? t('pdfViewer.exitFullscreen') : t('pdfViewer.enterFullscreen')}
-              onClick={toggleFullscreen}
-            >
-              {isFullscreen ? (
-                // simple \"collapse\" icon
-                <span className="text-lg leading-none">⤺</span>
-              ) : (
-                // simple \"expand\" icon
-                <span className="text-lg leading-none">⤢</span>
-              )}
-            </Button>
             <Button variant="outline" size="sm">
               <Link href="/">{t('preview.backToNotes')}</Link>
             </Button>
@@ -123,7 +126,7 @@ export function PreviewPage() {
       </main>
 
       {isFullscreen && (
-        <div className="fixed inset-0 z-50 bg-black">
+        <div className="fixed inset-0 z-50 bg-zinc-50 dark:bg-zinc-950">
           <PdfViewer
             fileUrl={fileUrl}
             title={title}
