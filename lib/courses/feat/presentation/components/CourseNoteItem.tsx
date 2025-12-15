@@ -43,32 +43,32 @@ export function CourseNoteItem({
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="flex cursor-pointer flex-col gap-2 rounded-lg border border-zinc-200 bg-white p-3 text-sm shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+      className="flex cursor-pointer flex-col gap-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 text-sm shadow-sm transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 dark:focus-visible:ring-zinc-600"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-zinc-900">
+          <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
             {note.title}
           </p>
-          <p className="mt-1 line-clamp-2 text-xs text-zinc-600">
+          <p className="mt-1 line-clamp-2 text-xs text-zinc-600 dark:text-zinc-400">
             {note.description}
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-white">
+        <span className="shrink-0 rounded-full bg-zinc-900 dark:bg-zinc-100 px-3 py-1 text-xs font-medium text-white dark:text-zinc-900">
           Open
         </span>
       </div>
-      <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-zinc-500">
-        <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700">
+      <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+        <span className="rounded-full bg-blue-50 dark:bg-blue-950 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-300">
           Level {level}
         </span>
-        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+        <span className="rounded-full bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
           Semester {semester}
         </span>
-        <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[11px] font-medium text-purple-700">
+        <span className="rounded-full bg-purple-50 dark:bg-purple-950 px-2 py-0.5 text-[11px] font-medium text-purple-700 dark:text-purple-300">
           {course}
         </span>
-        <span className="ml-auto text-[11px] text-zinc-500">
+        <span className="ml-auto text-[11px] text-zinc-500 dark:text-zinc-400">
           {note.lecturer_name} • {formattedDate}
         </span>
       </div>

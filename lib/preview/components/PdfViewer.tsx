@@ -1,8 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { createPluginRegistration } from '@embedpdf/core';
+import { EmbedPDF } from '@embedpdf/core/react';
+import { usePdfiumEngine } from '@embedpdf/engines/react';
+// Import the essential plugins (based on EmbedPDF docs)
+import { Viewport, ViewportPluginPackage } from '@embedpdf/plugin-viewport/react';
+import { Scroller, ScrollPluginPackage, useScroll } from '@embedpdf/plugin-scroll/react';
+import { LoaderPluginPackage } from '@embedpdf/plugin-loader/react';
+import { RenderLayer, RenderPluginPackage } from '@embedpdf/plugin-render/react';
+import { ThumbnailsPane, ThumbImg, ThumbnailPluginPackage } from '@embedpdf/plugin-thumbnail/react';
 import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 type PdfViewerProps = {
   fileUrl: string | null;
@@ -15,15 +26,152 @@ type PdfViewerProps = {
   showPreviewButton?: boolean;
   /**
    * Layout variant:
-   * - "default": card-style viewer with header and toolbar.
-   * - "overlay": fullscreen-style viewer with floating bottom controls.
+   * - "default": card-style viewer.
+   * - "overlay": fullscreen-style viewer with floating close button.
    */
   layoutVariant?: 'default' | 'overlay';
   /**
    * Optional close handler for overlay layouts.
    */
   onClose?: () => void;
+  /**
+   * Optional fullscreen handler for default layouts.
+   */
+  onFullscreen?: () => void;
 };
+
+// 1. Helper to register plugins for a given URL (adapted from docs)
+function createPluginsForUrl(fileUrl: string, includeThumbnails = false) {
+  const basePlugins = [
+    createPluginRegistration(LoaderPluginPackage, {
+      loadingOptions: {
+        type: 'url',
+        pdfFile: {
+          id: fileUrl,
+          url: fileUrl,
+        },
+      },
+    }),
+    createPluginRegistration(ViewportPluginPackage),
+    createPluginRegistration(ScrollPluginPackage),
+    createPluginRegistration(RenderPluginPackage),
+  ];
+
+  // Add thumbnail plugin if requested (for fullscreen mode)
+  // Dependencies (Render and Scroll) are already registered above
+  if (includeThumbnails) {
+    return [
+      ...basePlugins,
+      createPluginRegistration(ThumbnailPluginPackage, {
+        width: 120, // Thumbnail width in CSS pixels
+        gap: 8, // Vertical space between thumbnails
+        autoScroll: true, // Auto-scroll sidebar to current page
+      }),
+    ];
+  }
+
+  return basePlugins;
+}
+
+// Thumbnail Sidebar Component (for overlay/fullscreen mode)
+function ThumbnailSidebar({
+  isCollapsed,
+  onToggle,
+}: {
+  isCollapsed: boolean;
+  onToggle: () => void;
+}) {
+  const { state, provides } = useScroll();
+
+  return (
+    <div
+      className={`relative shrink-0 border-r border-zinc-800 bg-zinc-900 transition-all duration-300 ease-in-out ${
+        isCollapsed ? 'w-0 overflow-hidden' : 'w-[160px]'
+      }`}
+    >
+      {/* Toggle Button */}
+      <button
+        onClick={onToggle}
+        className="absolute -right-3 top-4 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800 text-zinc-300 shadow-lg transition-colors hover:bg-zinc-700 hover:text-white"
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        {isCollapsed ? (
+          <ChevronRight className="h-4 w-4" />
+        ) : (
+          <ChevronLeft className="h-4 w-4" />
+        )}
+      </button>
+
+      {!isCollapsed && (
+        <>
+          {/* Sidebar Header */}
+          <div className="border-b border-zinc-800 px-3 py-2.5">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              Pages
+            </h3>
+          </div>
+
+          {/* Thumbnails Container */}
+          <div className="h-full overflow-y-auto pb-4">
+            <ThumbnailsPane>
+              {(m) => {
+                const isActive = state.currentPage === m.pageIndex + 1;
+                return (
+                  <div
+                    key={m.pageIndex}
+                    style={{
+                      position: 'absolute',
+                      top: m.top,
+                      height: m.wrapperHeight,
+                      width: '100%',
+                      padding: '0 12px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() =>
+                      provides?.scrollToPage({ pageNumber: m.pageIndex + 1 })
+                    }
+                    className="transition-opacity hover:opacity-80"
+                  >
+                    <div
+                      style={{
+                        border: `2px solid ${isActive ? '#3b82f6' : '#404040'}`,
+                        borderRadius: '6px',
+                        width: m.width,
+                        height: m.height,
+                        backgroundColor: '#1a1a1a',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'border-color 0.2s',
+                      }}
+                      className={isActive ? 'ring-2 ring-blue-500/50' : ''}
+                    >
+                      <ThumbImg meta={m} />
+                    </div>
+                    <span
+                      style={{
+                        height: m.labelHeight,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '11px',
+                        color: isActive ? '#60a5fa' : '#9ca3af',
+                        fontWeight: isActive ? '600' : '400',
+                        marginTop: '4px',
+                      }}
+                    >
+                      {m.pageIndex + 1}
+                    </span>
+                  </div>
+                );
+              }}
+            </ThumbnailsPane>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export function PdfViewer({
   fileUrl,
@@ -32,93 +180,27 @@ export function PdfViewer({
   showPreviewButton = true,
   layoutVariant = 'default',
   onClose,
+  onFullscreen,
 }: PdfViewerProps) {
   const router = useRouter();
-  const [reactPdf, setReactPdf] = useState<null | typeof import('react-pdf')>(
-    null,
-  );
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(1.0);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  
+  // 2. Initialize the engine with the React hook (from docs)
+  const { engine, isLoading } = usePdfiumEngine();
+  
+  // Move useState to top level - hooks must be called unconditionally
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  // Avoid hydration mismatch
   useEffect(() => {
-    // Polyfill Promise.withResolvers for pdfjs if needed
-    if (typeof (Promise as any).withResolvers !== 'function') {
-      (Promise as any).withResolvers = function withResolvers<T>() {
-        let resolve!: (value: T | PromiseLike<T>) => void;
-        let reject!: (reason?: unknown) => void;
-        const promise = new Promise<T>((res, rej) => {
-          resolve = res;
-          reject = rej;
-        });
-        return { promise, resolve, reject };
-      };
-    }
-
-    let cancelled = false;
-
-    import('react-pdf')
-      .then((mod) => {
-        if (cancelled) return;
-        // Configure worker src after module is loaded
-        mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${mod.pdfjs.version}/build/pdf.worker.min.mjs`;
-        setReactPdf(mod);
-      })
-      .catch((error) => {
-        console.error('Failed to load react-pdf:', error);
-        if (!cancelled) {
-          setLoadError('Unable to load PDF viewer.');
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
+    setMounted(true);
   }, []);
 
-  if (!fileUrl) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
-        <p className="font-medium text-zinc-700">No note selected</p>
-        <p className="mt-1 text-xs text-zinc-500">
-          Choose a note from the list to view its PDF here.
-        </p>
-      </div>
-    );
-  }
+  // Determine if dark mode is active
+  const isDark = mounted && (resolvedTheme === 'dark' || (theme === 'system' && resolvedTheme === 'dark'));
 
-  if (!reactPdf) {
-    return (
-      <div className="flex h-full items-center justify-center rounded-lg border border-zinc-200 bg-white p-4 text-xs text-zinc-500">
-        Loading PDF viewer…
-      </div>
-    );
-  }
-
-  const { Document, Page } = reactPdf;
-
-  const handleDocumentLoadSuccess = ({
-    numPages: nextNumPages,
-  }: {
-    numPages: number;
-  }) => {
-    setNumPages(nextNumPages);
-    setPageNumber(1);
-    setLoadError(null);
-  };
-
-  const handleDocumentLoadError = (error: Error) => {
-    console.error('Error loading PDF:', error);
-    setLoadError(
-      'Unable to load PDF. The link may be restricted or blocked by CORS.',
-    );
-  };
-
-  const canGoPrev = pageNumber > 1;
-  const canGoNext = !!numPages && pageNumber < numPages;
-
-  const openInPreviewScreen = () => {
+  const openInPreviewPage = () => {
     if (!fileUrl) return;
     const params = new URLSearchParams({
       title: title ?? 'Selected note',
@@ -128,181 +210,192 @@ export function PdfViewer({
     router.push(`/preview?${params.toString()}`);
   };
 
-  const zoomControls = (
-    <div className="flex items-center gap-2 text-xs">
-      <button
-        type="button"
-        className="rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
-        onClick={() => setScale((s) => Math.max(0.5, s - 0.1))}
-      >
-        -
-      </button>
-      <span className="w-14 text-center tabular-nums text-zinc-50">
-        {Math.round(scale * 100)}%
-      </span>
-      <button
-        type="button"
-        className="rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
-        onClick={() => setScale((s) => Math.min(2, s + 0.1))}
-      >
-        +
-      </button>
-    </div>
+  // 1 (cont.). Register plugins when we have a URL
+  // Include thumbnails plugin for overlay (fullscreen) mode
+  const plugins = useMemo(
+    () => (fileUrl ? createPluginsForUrl(fileUrl, layoutVariant === 'overlay') : []),
+    [fileUrl, layoutVariant],
   );
+
+  if (!fileUrl) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="font-medium text-zinc-700 dark:text-zinc-300">No note selected</p>
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          Choose a note from the list to view its PDF here.
+        </p>
+      </div>
+    );
+  }
+
+  // While the engine is loading, show a spinner-style message
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 text-xs text-zinc-500 dark:text-zinc-400">
+        Loading PDF viewer…
+      </div>
+    );
+  }
+
+  // If the engine failed to initialize, show an explicit error instead of a
+  // permanent loading state.
+  if (!engine || plugins.length === 0) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/50 p-4 text-center text-xs text-red-700 dark:text-red-400">
+        <p className="font-medium">Unable to initialize PDF viewer.</p>
+        <p className="mt-1 text-[11px] text-red-500 dark:text-red-500">
+          The PDF engine failed to load. Please check your network connection and refresh the page.
+        </p>
+      </div>
+    );
+  }
 
   if (layoutVariant === 'overlay') {
     return (
-      <div className="relative flex h-full min-h-0 flex-col bg-black">
-        <div className="flex-1 overflow-auto">
-          {loadError ? (
-            <div className="flex h-full flex-col items-center justify-center p-4 text-center text-xs text-red-200">
-              <p className="font-medium">Could not display PDF.</p>
-              <p className="mt-1 text-[11px] text-red-300">
-                {loadError}
-              </p>
+      <div className="relative flex h-full flex-col bg-zinc-950">
+        {/* Top Header Bar */}
+        <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/95 px-4 py-3 backdrop-blur-sm">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            {courseCode && (
+              <div className="shrink-0 rounded bg-zinc-800 px-2 py-1">
+                <span className="text-xs font-medium text-zinc-300">
+                  {courseCode}
+                </span>
+              </div>
+            )}
+            <div className="min-w-0">
+              <h2 className="truncate text-sm font-semibold text-zinc-100">
+                {title ?? 'PDF Document'}
+              </h2>
             </div>
-          ) : (
-            <div className="flex justify-center py-4">
-              <Document
-                file={fileUrl}
-                onLoadSuccess={handleDocumentLoadSuccess}
-                onLoadError={handleDocumentLoadError}
-                loading={
-                  <div className="flex h-full items-center justify-center text-xs text-zinc-200">
-                    Loading PDF…
-                  </div>
-                }
-              >
-                <Page
-                  pageNumber={pageNumber}
-                  scale={scale}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
-                />
-              </Document>
-            </div>
-          )}
-        </div>
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center">
-          <div className="pointer-events-auto flex items-center gap-3 rounded-full bg-black/70 px-4 py-2 text-xs text-zinc-50 shadow-lg backdrop-blur">
-            {zoomControls}
-            <span className="hidden text-[11px] text-zinc-300 sm:inline">
-              {title ?? 'Selected note'}
-            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-zinc-800/50 p-0 text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white"
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              aria-label={isSidebarCollapsed ? 'Show thumbnails' : 'Hide thumbnails'}
+            >
+              {isSidebarCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </button>
             {onClose && (
-              <Button
+              <button
                 type="button"
-                size="sm"
-                variant="outline"
-                className="h-7 rounded-full border-zinc-500 bg-black/60 px-3 text-[11px] text-zinc-50 hover:bg-black"
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-zinc-800/50 p-0 text-zinc-300 transition-colors hover:bg-red-600/20 hover:border-red-600/50 hover:text-red-400"
                 onClick={onClose}
+                aria-label="Close fullscreen"
               >
-                Close
-              </Button>
+                <X className="h-4 w-4" />
+              </button>
             )}
           </div>
         </div>
+
+        {/* Main Content Area */}
+        <EmbedPDF engine={engine} plugins={plugins}>
+          <div className="flex flex-1 overflow-hidden">
+            {/* Thumbnail Sidebar */}
+            <ThumbnailSidebar
+              isCollapsed={isSidebarCollapsed}
+              onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            />
+
+            {/* Main PDF Viewport */}
+            <div className="flex-1 min-w-0 bg-zinc-950">
+              <Viewport
+                style={{
+                  backgroundColor: '#09090b',
+                  height: '100%',
+                }}
+              >
+                <Scroller
+                  renderPage={({ width, height, pageIndex, scale }) => (
+                    <div
+                      style={{
+                        width,
+                        height,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        padding: '2rem 0',
+                      }}
+                    >
+                      <RenderLayer pageIndex={pageIndex} scale={scale} />
+                    </div>
+                  )}
+                />
+              </Viewport>
+            </div>
+          </div>
+        </EmbedPDF>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
+    <div className="flex h-full min-h-0 flex-col rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-zinc-900">
+          <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
             {title ?? 'Selected note'}
           </p>
-          <p className="text-xs text-zinc-500">
-            {numPages ? `Page ${pageNumber} of ${numPages}` : 'Loading PDF…'}
-          </p>
         </div>
-        <div className="flex items-center gap-2 text-xs">
-          <button
-            type="button"
-            className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={() => setScale((s) => Math.max(0.5, s - 0.1))}
-          >
-            -
-          </button>
-          <span className="w-14 text-center tabular-nums text-zinc-600">
-            {Math.round(scale * 100)}%
-          </span>
-          <button
-            type="button"
-            className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100"
-            onClick={() => setScale((s) => Math.min(2, s + 0.1))}
-          >
-            +
-          </button>
-        </div>
-      </div>
-
-      <div className="mb-3 flex items-center justify-between gap-2 text-xs text-zinc-600">
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={() => canGoPrev && setPageNumber((p) => p - 1)}
-            disabled={!canGoPrev}
-          >
-            Prev
-          </button>
-          <button
-            type="button"
-            className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={() => canGoNext && setPageNumber((p) => p + 1)}
-            disabled={!canGoNext}
-          >
-            Next
-          </button>
+          {showPreviewButton && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={openInPreviewPage}
+              >
+                Open in preview
+              </Button>
+              {onFullscreen && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={onFullscreen}
+                  aria-label="Open in fullscreen"
+                >
+                  <span className="text-xs">⤢</span>
+                </Button>
+              )}
+            </>
+          )}
         </div>
-        {showPreviewButton && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={openInPreviewScreen}
-          >
-            Open in preview
-          </Button>
-        )}
       </div>
 
-      <div className="flex-1 overflow-auto rounded-md border border-zinc-200 bg-zinc-50">
-        {loadError ? (
-          <div className="flex h-full flex-col items-center justify-center p-4 text-center text-xs text-red-600">
-            <p className="font-medium">Could not display PDF inline.</p>
-            <p className="mt-1 text-[11px] text-red-500">
-              {loadError} You can still try opening it in a new tab using the
-              link above.
-            </p>
-          </div>
-        ) : (
-          <div className="flex justify-center py-2">
-            <Document
-              file={fileUrl}
-              onLoadSuccess={handleDocumentLoadSuccess}
-              onLoadError={handleDocumentLoadError}
-              loading={
-                <div className="flex h-full items-center justify-center text-xs text-zinc-500">
-                  Loading PDF…
+      <div className="flex-1 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
+        <EmbedPDF engine={engine} plugins={plugins}>
+          <Viewport
+            style={{
+              backgroundColor: isDark ? '#09090b' : '#f4f4f5',
+              height: '100%',
+            }}
+          >
+            <Scroller
+              renderPage={({ width, height, pageIndex, scale }) => (
+                <div
+                  style={{
+                    width,
+                    height,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    padding: '0.75rem 0',
+                  }}
+                >
+                  <RenderLayer pageIndex={pageIndex} scale={scale} />
                 </div>
-              }
-            >
-              <Page
-                pageNumber={pageNumber}
-                scale={scale}
-                renderAnnotationLayer={false}
-                renderTextLayer={false}
-              />
-            </Document>
-          </div>
-        )}
+              )}
+            />
+          </Viewport>
+        </EmbedPDF>
       </div>
     </div>
   );
 }
-
-
