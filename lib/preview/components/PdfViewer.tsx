@@ -126,26 +126,53 @@ function ThumbnailSidebar({
   // Override ThumbnailsPane inline height styles (372px -> auto)
   useEffect(() => {
     const overrideThumbnailHeights = () => {
-      // Find all divs with inline style containing "height: 372px"
+      // Find all divs with inline style containing "372px"
       const allDivs = document.querySelectorAll('div[style*="372px"]');
       allDivs.forEach((div) => {
         const element = div as HTMLElement;
         const style = element.getAttribute('style') || '';
-        if (style.includes('height: 372px') || style.includes('height:372px')) {
-          // Replace height: 372px with height: auto
-          const newStyle = style
-            .replace(/height:\s*372px;?/gi, 'height: auto;')
-            .replace(/height:372px;?/gi, 'height: auto;');
+        // Check if style contains height: 372px in various formats
+        if (style.includes('372px') && (style.includes('height') || style.includes('height:'))) {
+          // Replace height: 372px with height: auto (handle various formats)
+          let newStyle = style
+            .replace(/height:\s*372px\s*;?/gi, 'height: auto;')
+            .replace(/height:372px\s*;?/gi, 'height: auto;')
+            .replace(/height\s*:\s*372px\s*;?/gi, 'height: auto;');
+          
+          // Ensure we don't duplicate height property
+          const heightMatches = newStyle.match(/height:\s*auto\s*;?/gi);
+          if (heightMatches && heightMatches.length > 1) {
+            // Remove duplicates, keep only the last one
+            newStyle = newStyle.replace(/height:\s*auto\s*;?/gi, '');
+            newStyle = newStyle.trim() + (newStyle.trim().endsWith(';') ? '' : ';') + ' height: auto;';
+          }
+          
           element.setAttribute('style', newStyle);
         }
       });
     };
 
-    // Run immediately and set up MutationObserver to catch dynamically added elements
+    // Run immediately
     overrideThumbnailHeights();
 
-    const observer = new MutationObserver(() => {
-      overrideThumbnailHeights();
+    // Set up MutationObserver to catch dynamically added elements and style changes
+    const observer = new MutationObserver((mutations) => {
+      let shouldRun = false;
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          const target = mutation.target as HTMLElement;
+          const style = target.getAttribute('style') || '';
+          if (style.includes('372px')) {
+            shouldRun = true;
+          }
+        } else if (mutation.type === 'childList') {
+          shouldRun = true;
+        }
+      });
+      if (shouldRun) {
+        // Use requestAnimationFrame to batch updates
+        requestAnimationFrame(overrideThumbnailHeights);
+      }
     });
 
     // Observe the document body for changes
@@ -156,8 +183,10 @@ function ThumbnailSidebar({
       attributeFilter: ['style'],
     });
 
-    // Also run periodically as a fallback
-    const interval = setInterval(overrideThumbnailHeights, 100);
+    // Also run periodically as a fallback (less frequent to reduce overhead)
+    const interval = setInterval(() => {
+      requestAnimationFrame(overrideThumbnailHeights);
+    }, 500);
 
     return () => {
       observer.disconnect();
