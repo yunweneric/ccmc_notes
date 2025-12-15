@@ -1,0 +1,60 @@
+[
+  {
+    "level": "100",
+    "semester": "1",
+    "course": "Math 101",
+    "notes": [
+      {
+        "title": "Lecture 1 – Introduction to Algebra",
+        "description": "Overview of algebraic foundations and basic notation.",
+        "lecturer_name": "Dr. John Doe",
+        "added_date": "2025-09-15",
+        "file_url": "https://mega.nz/file/example-math-101-lecture-1"
+      },
+      {
+        "title": "Tutorial – Practice Problems Set 1",
+        "description": "Worked examples on linear equations and inequalities.",
+        "lecturer_name": "Dr. John Doe",
+        "added_date": "2025-09-20",
+        "file_url": "https://mega.nz/file/example-math-101-tutorial-1"
+      }
+    ]
+  },
+  {
+    "level": "100",
+    "semester": "1",
+    "course": "Physics 101",
+    "notes": [
+      {
+        "title": "Lecture 2 – Kinematics",
+        "description": "Position, velocity, acceleration and motion graphs.",
+        "lecturer_name": "Dr. Jane Smith",
+        "added_date": "2025-09-18",
+        "file_url": "https://mega.nz/file/example-physics-101-lecture-2"
+      }
+    ]
+  },
+  {
+    "level": "200",
+    "semester": "2",
+    "course": "CS 201",
+    "notes": [
+      {
+        "title": "Lecture 5 – Data Structures Overview",
+        "description": "Introduction to arrays, stacks, queues and linked lists.",
+        "lecturer_name": "Prof. Michael Lee",
+        "added_date": "2025-10-01",
+        "file_url": "https://mega.nz/file/example-cs-201-lecture-5"
+      },
+      {
+        "title": "Past Questions – Mid-Semester Exam",
+        "description": "Collection of past mid-semester questions with solutions.",
+        "lecturer_name": "Prof. Michael Lee",
+        "added_date": "2025-10-10",
+        "file_url": "https://mega.nz/file/example-cs-201-midsem"
+      }
+    ]
+  }
+]
+
+
