@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { PdfViewer } from "@/lib/features/preview";
 import { Button } from "@/components/ui/button";
@@ -448,128 +447,84 @@ export function CourseHomePage() {
           )}
         </section>
 
-        {/* Mobile filters sidebar / drawer */}
-        <AnimatePresence>
-          {filtersOpen && (
-            <motion.div
-              className="fixed inset-0 z-40 flex md:hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <button
-                type="button"
-                aria-label="Close filters"
-                className="h-full w-full bg-black/30"
-                onClick={() => setFiltersOpen(false)}
-              />
-              <motion.aside
-                className="relative ml-auto flex h-full w-80 flex-col gap-3 border-l border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-xl"
-                initial={{ x: 320 }}
-                animate={{ x: 0 }}
-                exit={{ x: 320 }}
-                transition={{ type: "spring", stiffness: 260, damping: 30 }}
-              >
-              <div className="mb-1 flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                    {t('common.filters')}
-                  </h2>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                    {t('home.adjustFilters')}
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setFiltersOpen(false)}
-                >
-                  {t('home.closeFilters')}
-                </Button>
-              </div>
-
-              <div className="flex flex-col gap-2">
+        {/* Mobile filters sheet */}
+        <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>{t('common.filters')}</SheetTitle>
+            </SheetHeader>
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">
+                  {t('common.search')}
+                </label>
                 <Input
-                  placeholder={t('common.search')}
+                  placeholder={t('home.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                      {t('home.level')}
-                    </label>
-                    <Combobox
-                      aria-label={t('home.level')}
-                      value={selectedLevel}
-                      onChange={(value) => {
-                        setSelectedLevel(value);
-                        setSelectedSemester("");
-                        setSelectedCourse("");
-                      }}
-                      options={levelOptions}
-                      placeholder={t('home.allLevels')}
-                      className="h-9"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                      {t('home.semester')}
-                    </label>
-                    <Combobox
-                      aria-label={t('home.semester')}
-                      value={selectedSemester}
-                      onChange={(value) => {
-                        setSelectedSemester(value);
-                        setSelectedCourse("");
-                      }}
-                      options={semesterOptions}
-                      placeholder={t('home.allSemesters')}
-                      className="h-9"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                      {t('home.course')}
-                    </label>
-                    <Combobox
-                      aria-label={t('home.course')}
-                      value={selectedCourse}
-                      onChange={(value) => setSelectedCourse(value)}
-                      options={courseOptions}
-                      placeholder={t('home.allCourses')}
-                      className="h-9"
-                    />
-                  </div>
-                </div>
               </div>
-
-              <div className="mt-auto flex flex-col gap-2 pt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    handleResetFilters();
-                    setFiltersOpen(false);
+              <div>
+                <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">
+                  {t('home.level')}
+                </label>
+                <Combobox
+                  aria-label={t('home.level')}
+                  value={selectedLevel}
+                  onChange={(value) => {
+                    setSelectedLevel(value);
+                    setSelectedSemester("");
+                    setSelectedCourse("");
                   }}
-                >
-                  {t('home.clearFilters')}
-                </Button>
-                <p>
-                  {t('home.showingNotesFor')}{' '}
-                  {selectedLevel ? `${t('home.level')} ${selectedLevel}` : t('home.allLevels')},{' '}
-                  {selectedSemester
-                    ? `${t('home.semester')} ${selectedSemester}`
-                    : t('home.allSemesters')}
-                  , {selectedCourse || t('home.allCourses')}.
-                </p>
+                  options={levelOptions}
+                  placeholder={t('home.allLevels')}
+                  className="h-9"
+                />
               </div>
-              </motion.aside>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div>
+                <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">
+                  {t('home.semester')}
+                </label>
+                <Combobox
+                  aria-label={t('home.semester')}
+                  value={selectedSemester}
+                  onChange={(value) => {
+                    setSelectedSemester(value);
+                    setSelectedCourse("");
+                  }}
+                  options={semesterOptions}
+                  placeholder={t('home.allSemesters')}
+                  className="h-9"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">
+                  {t('home.course')}
+                </label>
+                <Combobox
+                  aria-label={t('home.course')}
+                  value={selectedCourse}
+                  onChange={(value) => setSelectedCourse(value)}
+                  options={courseOptions}
+                  placeholder={t('home.allCourses')}
+                  className="h-9"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  handleResetFilters();
+                  setFiltersOpen(false);
+                }}
+                className="w-full"
+              >
+                {t('home.clearFilters')}
+              </Button>
+            </div>
+          </SheetContent>
+        </Sheet>
 
         <section className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden md:flex-row">
           <div className="flex min-h-0 w-full flex-col gap-3 md:w-[45%]">
