@@ -15,6 +15,7 @@ import Link from "next/link";
 import { GithubButton } from "@/components/github/GithubButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { UserMenu } from "@/components/user/UserMenu";
 
 export function CourseHomePage() {
   const { t, locale } = useTranslation();
@@ -141,6 +142,7 @@ export function CourseHomePage() {
               <ThemeSwitcher />
               <LanguageSwitcher />
               <GithubButton />
+              <UserMenu />
             </div>
             {/* Mobile: Show calendar, filters, and menu buttons */}
             <div className="flex sm:hidden items-center gap-2 shrink-0">
@@ -165,6 +167,7 @@ export function CourseHomePage() {
               >
                 <Filter className="h-4 w-4" />
               </Button>
+              <UserMenu />
               <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                 <SheetTrigger asChild>
                   <Button

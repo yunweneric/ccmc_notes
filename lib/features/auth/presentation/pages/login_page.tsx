@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+
 import Image from 'next/image';
-import { useAuthContext } from '../components/auth_provider';
 import { LoginForm } from '../components/login_form';
 import { useTranslation } from '@/lib/features/i18n';
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
@@ -12,31 +10,6 @@ import { BookOpen } from 'lucide-react';
 
 export function LoginPage() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { user, loading } = useAuthContext();
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
-
-  // Show loading state while checking auth
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <div className="text-sm text-zinc-500 dark:text-zinc-400">
-          {t('common.loading')}
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render login form if already authenticated (will redirect)
-  if (user) {
-    return null;
-  }
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">

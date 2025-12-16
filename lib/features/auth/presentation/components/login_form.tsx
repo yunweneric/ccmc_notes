@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { useAuthContext } from './auth_provider';
 import { useTranslation } from '@/lib/features/i18n';
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,6 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,7 +28,6 @@ export function LoginForm() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({});
-    setSubmitError(null);
 
     // Client-side validation
     const newErrors: { email?: string; password?: string } = {};
@@ -49,20 +48,20 @@ export function LoginForm() {
     setIsSubmitting(true);
     try {
       await login({ email: email.trim(), password });
+      toast.success(t('auth.loginSuccess') || 'Login successful');
       // Redirect to home page on successful login
       router.push('/');
       router.refresh();
     } catch (error) {
-      setSubmitError(
-        error instanceof Error ? error.message : t('auth.loginError')
-      );
+      const errorMessage = error instanceof Error ? error.message : t('auth.loginError');
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+
   const isLoading = loading || isSubmitting;
-  const displayError = submitError || authError;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -140,17 +139,6 @@ export function LoginForm() {
         )}
       </div>
 
-      {displayError && (
-        <div
-          className="rounded-md bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-3 text-sm"
-          role="alert"
-        >
-          <p className="text-red-800 dark:text-red-200">
-            {displayError}
-          </p>
-        </div>
-      )}
-
       <Button
         type="submit"
         className="w-full h-11 text-sm font-medium"
@@ -160,7 +148,7 @@ export function LoginForm() {
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {t('auth.loggingIn')}
+            {t('auth.processing')}
           </>
         ) : (
           t('auth.loginButton')

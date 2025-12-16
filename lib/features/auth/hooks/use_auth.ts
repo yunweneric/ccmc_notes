@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { authService } from '../data/services';
-import { mapFirebaseUser } from '../data/interfaces';
-import type { User, LoginCredentials } from '../data/interfaces';
+import type { AuthUser, LoginCredentials } from '../data/interfaces';
+import { Role } from '../data/interfaces/auth';
 import type { User as FirebaseUser } from 'firebase/auth';
 
 interface UseAuthReturn {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
   error: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -15,15 +15,31 @@ interface UseAuthReturn {
 }
 
 export function useAuth(): UseAuthReturn {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = authService.onAuthStateChanged((firebaseUser: FirebaseUser | null) => {
-      setUser(mapFirebaseUser(firebaseUser));
-      setLoading(false);
-      setError(null);
+    const unsubscribe = authService.onAuthStateChanged(async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        try {
+          setLoading(true);
+          // Fetch full user data from Firestore
+          const userData = await authService.getUserByUid(firebaseUser.uid);
+          setUser(userData);
+          setError(null);
+        } catch (err) {
+          console.error('Error fetching user data:', err);
+          setError('Failed to load user data');
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setUser(null);
+        setLoading(false);
+        setError(null);
+      }
     });
 
     return () => unsubscribe();

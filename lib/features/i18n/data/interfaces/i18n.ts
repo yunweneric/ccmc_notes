@@ -110,6 +110,7 @@ export interface Translations {
     passwordRequired: string;
     loginButton: string;
     loggingIn: string;
+    processing: string;
     loginError: string;
     invalidCredentials: string;
     adminNote: string;

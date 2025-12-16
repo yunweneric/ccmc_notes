@@ -48,7 +48,7 @@ export function GithubButton({
   const iconSize = size === 'sm' ? 'h-4 w-4' : 'h-5 w-5';
 
   const buttonBaseClasses =
-    'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-transparent text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800';
+    'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-zinc-300 dark:border-zinc-700 bg-background text-foreground hover:bg-accent hover:text-accent-foreground';
 
   return (
     <div className="relative inline-flex items-center">

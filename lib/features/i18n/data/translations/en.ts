@@ -110,6 +110,7 @@ export const en: Translations = {
     passwordRequired: 'Password is required',
     loginButton: 'Sign In',
     loggingIn: 'Signing in...',
+    processing: 'Processing...',
     loginError: 'An error occurred during login. Please try again',
     invalidCredentials: 'Invalid email or password',
     adminNote: 'Contact your administrator to receive login credentials',

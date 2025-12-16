@@ -4,24 +4,32 @@ import {
   onAuthStateChanged,
   type User as FirebaseUser,
 } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { auth } from '@/lib/shared/firebase/config';
-import type { User, LoginCredentials } from '../interfaces';
+import type {  LoginCredentials, AuthUser } from '../interfaces';
+import { Role } from '../interfaces/auth';
+import { db } from '@/lib/shared/firebase/config';
 
 export class AuthService {
-  async login(credentials: LoginCredentials): Promise<{ data: User | null; error: string | null }> {
+  async login(credentials: LoginCredentials): Promise<{ data: AuthUser | null; error: string | null }> {
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         credentials.email,
         credentials.password
       );
+
+      //Find the user information from the database
+      const user:AuthUser | null = await this.getUserByUid(userCredential.user.uid);
+      if (!user) {
+        return {
+          data: null,
+          error: 'User not found',
+        };
+      }
+
       return {
-        data: {
-          uid: userCredential.user.uid,
-          email: userCredential.user.email,
-          displayName: userCredential.user.displayName,
-          photoURL: userCredential.user.photoURL,
-        },
+        data: user,
         error: null,
       };
     } catch (error: unknown) {
@@ -44,6 +52,31 @@ export class AuthService {
       return {
         error: errorMessage,
       };
+    }
+  }
+  async getUserByUid(uid: string): Promise<AuthUser | null> {
+    try {
+      const userDocRef = doc(db, 'users', uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.exists()) {
+        return null;
+      }
+      
+      const userData = userDoc.data();
+      return {
+        uid: userData.uid || uid,
+        email: userData.email || null,
+        displayName: userData.displayName || null,
+        photoURL: userData.photoURL || null,
+        role: {
+          name: userData.role as Role,
+          value: userData.role as string,
+        },
+      } as AuthUser;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return null;
     }
   }
 
