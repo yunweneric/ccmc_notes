@@ -11,16 +11,18 @@ import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { useTranslation } from "@/lib/features/i18n";
 import { useCourses } from "../../hooks";
 import { CourseNoteItem } from "../components";
-import { X, AlertCircle, RefreshCw, Calendar } from "lucide-react";
+import { X, AlertCircle, RefreshCw, Calendar, Menu, Filter } from "lucide-react";
 import Link from "next/link";
 import { GithubButton } from "@/components/github/GithubButton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export function CourseHomePage() {
   const { t, locale } = useTranslation();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [visibleNotesCount, setVisibleNotesCount] = useState(7);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const notesContainerRef = useRef<HTMLDivElement>(null);
 
   const toggleFullscreen = () => {
@@ -114,39 +116,100 @@ export function CourseHomePage() {
   return (
     <div className="flex h-screen bg-zinc-50 dark:bg-zinc-950 px-4 py-6 text-zinc-900 dark:text-zinc-100 overflow-hidden">
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-4 overflow-hidden md:h-full">
-        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-zinc-200 dark:border-zinc-800 pb-3">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-              {t('home.title')}
-            </h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {t('home.description')}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/calendar">
+        <header className="flex shrink-0 flex-col gap-2 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 sm:px-4 sm:py-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col gap-1 min-w-0 flex-1">
+              <h1 className="text-sm sm:text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 truncate">
+                {t('home.title')}
+              </h1>
+              <p className="hidden sm:block text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+                {t('home.description')}
+              </p>
+            </div>
+            {/* Desktop: Show all controls */}
+            <div className="hidden sm:flex items-center gap-2 shrink-0">
+              <Link href="/calendar">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  aria-label={t('common.calendar')}
+                >
+                  <Calendar className="h-4 w-4" />
+                </Button>
+              </Link>
+              <ThemeSwitcher />
+              <LanguageSwitcher />
+              <GithubButton />
+            </div>
+            {/* Mobile: Show calendar, filters, and menu buttons */}
+            <div className="flex sm:hidden items-center gap-2 shrink-0">
+              <Link href="/calendar">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  aria-label={t('common.calendar')}
+                >
+                  <Calendar className="h-4 w-4" />
+                </Button>
+              </Link>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-9 w-9 mt-1 p-0"
-                aria-label={t('common.calendar')}
+                className="h-8 w-8 p-0"
+                onClick={() => setFiltersOpen(true)}
+                aria-label={t('common.filters')}
               >
-                <Calendar className="h-4 w-4" />
+                <Filter className="h-4 w-4" />
               </Button>
-            </Link>
-            <LanguageSwitcher />
-            <ThemeSwitcher />
-            <GithubButton />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-9 mt-1 inline-flex items-center gap-1 md:hidden"
-              onClick={() => setFiltersOpen(true)}
-            >
-              {t('common.filters')}
-            </Button>
+              <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 shrink-0"
+                    aria-label="Menu"
+                  >
+                    <Menu className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Options</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">
+                        Theme
+                      </label>
+                      <ThemeSwitcher variant="buttons" showLabels={true} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">
+                        Language
+                      </label>
+                      <LanguageSwitcher variant="buttons" showLabels={true} />
+                    </div>
+                    <div className="flex justify-center">
+                      <a
+                        href="https://github.com/yunweneric/ccmc_notes"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                      >
+                        <GithubButton showStars={false} />
+                        <span>View on GitHub</span>
+                      </a>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </header>
 
