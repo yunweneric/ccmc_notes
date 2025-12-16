@@ -80,5 +80,21 @@ export const en: Translations = {
     dark: 'Dark',
     system: 'System',
   },
+  timetable: {
+    addSchedule: 'Add Schedule',
+    editSchedule: 'Edit Schedule',
+    deleteSchedule: 'Delete Schedule',
+    courseCode: 'Course Code',
+    courseName: 'Course Name',
+    day: 'Day',
+    startTime: 'Start Time',
+    endTime: 'End Time',
+    location: 'Location',
+    lecturer: 'Lecturer (Optional)',
+    save: 'Save',
+    cancel: 'Cancel',
+    delete: 'Delete',
+    confirmDelete: 'Are you sure you want to delete this schedule?',
+  },
 };
 

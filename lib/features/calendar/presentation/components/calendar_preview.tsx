@@ -7,9 +7,11 @@ import { CalendarMonthView } from './calendar_month_view';
 import { CalendarWeekView } from './calendar_week_view';
 import { CalendarDayView } from './calendar_day_view';
 import { CalendarYearView } from './calendar_year_view';
+import { TimetableModal } from './timetable_modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
 import type { CalendarView } from './calendar_utils';
+import type { ClassSchedule, CreateClassSchedule, UpdateClassSchedule } from '../../data/interfaces';
 import {
   getWeekStart,
   getMonthStart,
@@ -17,9 +19,13 @@ import {
 } from './calendar_utils';
 
 export function CalendarPreview() {
-  const { schedules, isLoading, error } = useCalendar();
+  const { schedules, isLoading, error, createSchedule, updateSchedule, deleteSchedule, refetch } = useCalendar();
   const [view, setView] = useState<CalendarView>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<ClassSchedule | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const handlePrevious = useCallback(() => {
     setCurrentDate((prev) => {
@@ -97,6 +103,34 @@ export function CalendarPreview() {
     setView('month');
   }, []);
 
+  const handleCellClick = useCallback((date: Date, time?: string) => {
+    setSelectedSchedule(null);
+    setSelectedDate(date);
+    setSelectedTime(time || null);
+    setModalOpen(true);
+  }, []);
+
+  const handleScheduleClick = useCallback((schedule: ClassSchedule) => {
+    setSelectedSchedule(schedule);
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setModalOpen(true);
+  }, []);
+
+  const handleSave = useCallback(async (data: CreateClassSchedule | UpdateClassSchedule) => {
+    if ('id' in data) {
+      await updateSchedule(data);
+    } else {
+      await createSchedule(data);
+    }
+    await refetch();
+  }, [createSchedule, updateSchedule, refetch]);
+
+  const handleDelete = useCallback(async (id: string) => {
+    await deleteSchedule(id);
+    await refetch();
+  }, [deleteSchedule, refetch]);
+
   if (isLoading) {
     return (
       <div className="flex h-full flex-col">
@@ -138,13 +172,25 @@ export function CalendarPreview() {
             currentDate={currentDate}
             schedules={schedules}
             onDayClick={handleDayClick}
+            onCellClick={handleCellClick}
+            onScheduleClick={handleScheduleClick}
           />
         )}
         {view === 'week' && (
-          <CalendarWeekView currentDate={currentDate} schedules={schedules} />
+          <CalendarWeekView
+            currentDate={currentDate}
+            schedules={schedules}
+            onCellClick={handleCellClick}
+            onScheduleClick={handleScheduleClick}
+          />
         )}
         {view === 'day' && (
-          <CalendarDayView currentDate={currentDate} schedules={schedules} />
+          <CalendarDayView
+            currentDate={currentDate}
+            schedules={schedules}
+            onCellClick={handleCellClick}
+            onScheduleClick={handleScheduleClick}
+          />
         )}
         {view === 'year' && (
           <CalendarYearView
@@ -154,6 +200,16 @@ export function CalendarPreview() {
           />
         )}
       </div>
+
+      <TimetableModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        selectedDate={selectedDate || undefined}
+        selectedTime={selectedTime || undefined}
+        schedule={selectedSchedule || undefined}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Calendar, CalendarDays, Grid3x3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
 import { cn } from '@/lib/utils';
 import type { CalendarView } from './calendar_utils';
 
@@ -19,7 +20,7 @@ export function CalendarViewSwitcher({ view, onViewChange }: CalendarViewSwitche
   ];
 
   return (
-    <div className="flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-1">
+    <ButtonGroup orientation="horizontal" className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
       {views.map(({ value, label, icon: Icon }) => (
         <Button
           key={value}
@@ -28,17 +29,18 @@ export function CalendarViewSwitcher({ view, onViewChange }: CalendarViewSwitche
           size="sm"
           onClick={() => onViewChange(value)}
           className={cn(
-            'h-8 px-3 text-xs font-medium transition-colors',
+            'h-8 px-1.5 sm:px-3 text-xs font-medium transition-colors border-0',
             view === value
-              ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+              ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 z-10'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 bg-transparent'
           )}
+          aria-label={label}
         >
-          <Icon className="mr-1.5 h-3.5 w-3.5" />
+          <Icon className="h-3.5 w-3.5 sm:mr-1.5" />
           <span className="hidden sm:inline">{label}</span>
         </Button>
       ))}
-    </div>
+    </ButtonGroup>
   );
 }
 

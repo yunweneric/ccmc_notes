@@ -9,6 +9,7 @@ interface CalendarDayCellProps {
   isCurrentMonth: boolean;
   schedules: ClassSchedule[];
   onClick?: () => void;
+  onScheduleClick?: (schedule: ClassSchedule) => void;
 }
 
 export function CalendarDayCell({
@@ -16,6 +17,7 @@ export function CalendarDayCell({
   isCurrentMonth,
   schedules,
   onClick,
+  onScheduleClick,
 }: CalendarDayCellProps) {
   const today = isToday(date);
   const dayNumber = date.getDate();
@@ -42,11 +44,15 @@ export function CalendarDayCell({
       </span>
       {scheduleCount > 0 && (
         <div className="mt-1 flex flex-wrap gap-0.5">
-          {schedules.slice(0, 3).map((schedule, idx) => (
+          {schedules.slice(0, 3).map((schedule) => (
             <div
               key={schedule.id}
-              className="h-1.5 w-1.5 rounded-full bg-blue-500 dark:bg-blue-400"
+              className="h-1.5 w-1.5 rounded-full bg-blue-500 dark:bg-blue-400 cursor-pointer hover:bg-blue-600 dark:hover:bg-blue-300 transition-colors"
               title={`${schedule.courseName} - ${schedule.startTime}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onScheduleClick?.(schedule);
+              }}
             />
           ))}
           {scheduleCount > 3 && (

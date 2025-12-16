@@ -7,9 +7,10 @@ interface CalendarClassBlockProps {
   schedule: ClassSchedule;
   style?: React.CSSProperties;
   className?: string;
+  onClick?: (schedule: ClassSchedule) => void;
 }
 
-export function CalendarClassBlock({ schedule, style, className }: CalendarClassBlockProps) {
+export function CalendarClassBlock({ schedule, style, className, onClick }: CalendarClassBlockProps) {
   return (
     <div
       className={`absolute left-0 right-0 mx-1 rounded-md border-l-4 bg-blue-50 dark:bg-blue-950/30 p-1.5 text-xs shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
@@ -19,6 +20,7 @@ export function CalendarClassBlock({ schedule, style, className }: CalendarClass
         ...style,
         borderLeftColor: '#3b82f6', // blue-500
       }}
+      onClick={() => onClick?.(schedule)}
     >
       <div className="font-medium text-blue-900 dark:text-blue-100 truncate">
         {schedule.courseName}

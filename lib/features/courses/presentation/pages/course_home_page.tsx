@@ -129,10 +129,10 @@ export function CourseHomePage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-9 mt-1 inline-flex items-center gap-1.5"
+                className="h-9 w-9 mt-1 p-0"
+                aria-label={t('common.calendar')}
               >
                 <Calendar className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('common.calendar')}</span>
               </Button>
             </Link>
             <LanguageSwitcher />

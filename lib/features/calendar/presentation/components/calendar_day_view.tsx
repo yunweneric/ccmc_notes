@@ -8,6 +8,8 @@ import { CalendarClassBlock } from './calendar_class_block';
 interface CalendarDayViewProps {
   currentDate: Date;
   schedules: ClassSchedule[];
+  onCellClick?: (date: Date, time: string) => void;
+  onScheduleClick?: (schedule: ClassSchedule) => void;
 }
 
 const HOUR_HEIGHT = 60; // 60px per hour
@@ -15,7 +17,7 @@ const START_HOUR = 7; // 7 AM
 const END_HOUR = 22; // 10 PM
 const HOURS = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => START_HOUR + i);
 
-export function CalendarDayView({ currentDate, schedules }: CalendarDayViewProps) {
+export function CalendarDayView({ currentDate, schedules, onCellClick, onScheduleClick }: CalendarDayViewProps) {
   const daySchedules = useMemo(() => getSchedulesForDay(schedules, currentDate), [schedules, currentDate]);
   const isTodayDay = isToday(currentDate);
 
@@ -58,13 +60,17 @@ export function CalendarDayView({ currentDate, schedules }: CalendarDayViewProps
             isTodayDay ? 'bg-blue-50/30 dark:bg-blue-950/20' : ''
           }`}>
             {/* Time slot grid */}
-            {HOURS.map((hour) => (
-              <div
-                key={hour}
-                className="border-b border-zinc-200 dark:border-zinc-800"
-                style={{ height: HOUR_HEIGHT }}
-              />
-            ))}
+            {HOURS.map((hour) => {
+              const timeString = `${hour.toString().padStart(2, '0')}:00`;
+              return (
+                <div
+                  key={hour}
+                  className="border-b border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30 cursor-pointer transition-colors"
+                  style={{ height: HOUR_HEIGHT }}
+                  onClick={() => onCellClick?.(currentDate, timeString)}
+                />
+              );
+            })}
 
             {/* Class blocks */}
             {daySchedules.map((schedule) => {
@@ -83,6 +89,7 @@ export function CalendarDayView({ currentDate, schedules }: CalendarDayViewProps
                     height: `${height}px`,
                   }}
                   className="mx-2"
+                  onClick={onScheduleClick}
                 />
               );
             })}

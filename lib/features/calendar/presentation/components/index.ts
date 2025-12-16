@@ -7,5 +7,7 @@ export { CalendarDayView } from './calendar_day_view';
 export { CalendarYearView } from './calendar_year_view';
 export { CalendarClassBlock } from './calendar_class_block';
 export { CalendarDayCell } from './calendar_day_cell';
+export { TimetableModal } from './timetable_modal';
+export { TimetableForm } from './timetable_form';
 export * from './calendar_utils';
 

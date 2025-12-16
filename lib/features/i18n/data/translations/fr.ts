@@ -80,5 +80,21 @@ export const fr: Translations = {
     dark: 'Sombre',
     system: 'Système',
   },
+  timetable: {
+    addSchedule: 'Ajouter un horaire',
+    editSchedule: 'Modifier l\'horaire',
+    deleteSchedule: 'Supprimer l\'horaire',
+    courseCode: 'Code du cours',
+    courseName: 'Nom du cours',
+    day: 'Jour',
+    startTime: 'Heure de début',
+    endTime: 'Heure de fin',
+    location: 'Lieu',
+    lecturer: 'Professeur (Optionnel)',
+    save: 'Enregistrer',
+    cancel: 'Annuler',
+    delete: 'Supprimer',
+    confirmDelete: 'Êtes-vous sûr de vouloir supprimer cet horaire?',
+  },
 };
 

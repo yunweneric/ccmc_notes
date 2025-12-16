@@ -9,6 +9,8 @@ interface CalendarMonthViewProps {
   currentDate: Date;
   schedules: ClassSchedule[];
   onDayClick?: (date: Date) => void;
+  onCellClick?: (date: Date) => void;
+  onScheduleClick?: (schedule: ClassSchedule) => void;
 }
 
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -17,6 +19,8 @@ export function CalendarMonthView({
   currentDate,
   schedules,
   onDayClick,
+  onCellClick,
+  onScheduleClick,
 }: CalendarMonthViewProps) {
   const monthStart = useMemo(() => {
     return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -65,7 +69,11 @@ export function CalendarMonthView({
                 date={date}
                 isCurrentMonth={isCurrentMonth}
                 schedules={daySchedules}
-                onClick={() => onDayClick?.(date)}
+                onClick={() => {
+                  onCellClick?.(date);
+                  onDayClick?.(date);
+                }}
+                onScheduleClick={onScheduleClick}
               />
             );
           })}

@@ -80,5 +80,21 @@ export interface Translations {
     dark: string;
     system: string;
   };
+  timetable: {
+    addSchedule: string;
+    editSchedule: string;
+    deleteSchedule: string;
+    courseCode: string;
+    courseName: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    location: string;
+    lecturer: string;
+    save: string;
+    cancel: string;
+    delete: string;
+    confirmDelete: string;
+  };
 }
 
