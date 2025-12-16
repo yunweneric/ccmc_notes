@@ -152,7 +152,7 @@ export function CourseHomePage() {
           </div>
         </header>
 
-        {/* Recent courses section with shimmer loader */}
+        {/* Recent courses section with skeleton loader */}
         {error ? (
           <section className="flex shrink-0 flex-col gap-3 rounded-lg border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-950/20 p-4 shadow-sm">
             <div className="flex items-center gap-2 text-xs text-red-700 dark:text-red-400">
