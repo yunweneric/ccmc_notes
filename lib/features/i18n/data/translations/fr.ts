@@ -112,8 +112,11 @@ export const fr: Translations = {
     loggingIn: 'Connexion en cours...',
     processing: 'Traitement en cours...',
     loginError: 'Une erreur s\'est produite lors de la connexion. Veuillez réessayer',
+    loginSuccess: 'Connexion réussie',
     invalidCredentials: 'Email ou mot de passe invalide',
     adminNote: 'Contactez votre administrateur pour recevoir vos identifiants de connexion',
+    showPassword: 'Afficher le mot de passe',
+    hidePassword: 'Masquer le mot de passe',
   },
 };
 

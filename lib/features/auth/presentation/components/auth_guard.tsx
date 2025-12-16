@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthContext } from './auth_provider';
+import { Role } from '@/lib/features/auth/data/interfaces/auth';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -14,18 +15,24 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const { user, loading } = useAuthContext();
 
   useEffect(() => {
-    // Don't redirect if we're already on the login page
-    if (pathname === '/login') {
-      return;
-    }
-
     // Wait for auth state to load
     if (loading) {
       return;
     }
 
-    // Redirect to login if not authenticated
-    if (!user) {
+    // If user is authenticated and on login page, redirect them away
+    if (user && pathname === '/login') {
+      // Check if user is admin and redirect to dashboard, otherwise go to home
+      if (user.role?.name === Role.ADMIN) {
+        router.replace('/dashboard');
+      } else {
+        router.replace('/');
+      }
+      return;
+    }
+
+    // Redirect to login if not authenticated and not on login page
+    if (!user && pathname !== '/login') {
       router.push('/login');
     }
   }, [user, loading, router, pathname]);

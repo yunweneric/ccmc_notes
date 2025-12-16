@@ -112,8 +112,11 @@ export const en: Translations = {
     loggingIn: 'Signing in...',
     processing: 'Processing...',
     loginError: 'An error occurred during login. Please try again',
+    loginSuccess: 'Login successful',
     invalidCredentials: 'Invalid email or password',
     adminNote: 'Contact your administrator to receive login credentials',
+    showPassword: 'Show password',
+    hidePassword: 'Hide password',
   },
 };
 

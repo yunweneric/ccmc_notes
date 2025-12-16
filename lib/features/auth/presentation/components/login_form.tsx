@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useAuthContext } from './auth_provider';
 import { useTranslation } from '@/lib/features/i18n';
+import { Role } from '@/lib/features/auth/data/interfaces/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
@@ -13,12 +14,13 @@ import { cn } from '@/lib/utils';
 export function LoginForm() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { login, loading, error: authError } = useAuthContext();
+  const { login, loading, error: authError, user } = useAuthContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const loginSuccessRef = useRef(false);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,11 +50,11 @@ export function LoginForm() {
     setIsSubmitting(true);
     try {
       await login({ email: email.trim(), password });
-      toast.success(t('auth.loginSuccess') || 'Login successful');
-      // Redirect to home page on successful login
-      router.push('/');
-      router.refresh();
+      loginSuccessRef.current = true;
+      toast.success(t('auth.loginSuccess'));
+      // Redirect will be handled by useEffect watching user state
     } catch (error) {
+      loginSuccessRef.current = false;
       const errorMessage = error instanceof Error ? error.message : t('auth.loginError');
       toast.error(errorMessage);
     } finally {
@@ -60,6 +62,28 @@ export function LoginForm() {
     }
   };
 
+  // Show toast for auth errors from context
+  useEffect(() => {
+    if (authError) {
+      toast.error(authError);
+    }
+  }, [authError]);
+
+  // Redirect after successful login based on user role
+  useEffect(() => {
+    if (loginSuccessRef.current && user && !loading && !isSubmitting) {
+      // Reset the ref
+      loginSuccessRef.current = false;
+      
+      // Check if user is admin and redirect to dashboard, otherwise go to home
+      // Use replace instead of push to prevent going back to login page
+      if (user.role?.name === Role.ADMIN) {
+        router.replace('/dashboard');
+      } else {
+        router.replace('/');
+      }
+    }
+  }, [user, loading, isSubmitting, router]);
 
   const isLoading = loading || isSubmitting;
 
@@ -117,7 +141,7 @@ export function LoginForm() {
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
             disabled={isLoading}
             tabIndex={0}
           >

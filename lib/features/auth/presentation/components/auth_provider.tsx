@@ -2,10 +2,10 @@
 
 import { createContext, useContext, type ReactNode } from 'react';
 import { useAuth } from '../../hooks';
-import type { User, LoginCredentials } from '../../data/interfaces';
+import type { AuthUser, LoginCredentials } from '../../data/interfaces';
 
 interface AuthContextValue {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
   error: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
