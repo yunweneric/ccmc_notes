@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { LanguageProvider } from "@/lib/i18n/context";
+import { LanguageProvider } from "@/lib/features/i18n";
 import { Toaster } from "sonner";
 
 const urbanist = Urbanist({

@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { PreviewPage } from '@/lib/preview/PreviewPage';
+import { PreviewPage } from '@/lib/features/preview';
 
 export default function PreviewRoutePage() {
   return (

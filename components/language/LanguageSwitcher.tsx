@@ -1,7 +1,7 @@
 'use client';
 
 import { Languages, Check } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/hooks';
+import { useTranslation } from '@/lib/features/i18n';
 import {
   Select,
   SelectContent,

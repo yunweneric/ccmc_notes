@@ -4,7 +4,7 @@ import { Moon, Sun, Monitor, Check } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/lib/i18n/hooks';
+import { useTranslation } from '@/lib/features/i18n';
 import {
   Select,
   SelectContent,
