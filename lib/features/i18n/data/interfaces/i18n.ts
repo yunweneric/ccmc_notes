@@ -14,6 +14,7 @@ export interface Translations {
     shown: string;
     reload: string;
     calendar: string;
+    apply: string;
   };
   home: {
     title: string;

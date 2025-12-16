@@ -14,6 +14,7 @@ export const fr: Translations = {
     shown: 'affichés',
     reload: 'Recharger',
     calendar: 'Calendrier',
+    apply: 'Appliquer',
   },
   home: {
     title: 'Bibliothèque de notes CCMC',

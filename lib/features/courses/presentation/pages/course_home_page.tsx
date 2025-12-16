@@ -510,18 +510,28 @@ export function CourseHomePage() {
                   className="h-9"
                 />
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  handleResetFilters();
-                  setFiltersOpen(false);
-                }}
-                className="w-full"
-              >
-                {t('home.clearFilters')}
-              </Button>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleResetFilters();
+                    setFiltersOpen(false);
+                  }}
+                  className="flex-1"
+                >
+                  {t('home.clearFilters')}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setFiltersOpen(false)}
+                  className="flex-1"
+                >
+                  {t('common.apply')}
+                </Button>
+              </div>
             </div>
           </SheetContent>
         </Sheet>
