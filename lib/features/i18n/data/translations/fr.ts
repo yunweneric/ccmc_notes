@@ -13,6 +13,7 @@ export const fr: Translations = {
     all: 'Tous',
     shown: 'affichés',
     reload: 'Recharger',
+    calendar: 'Calendrier',
   },
   home: {
     title: 'Bibliothèque de notes CCMC',

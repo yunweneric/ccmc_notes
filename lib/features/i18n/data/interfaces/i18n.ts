@@ -13,6 +13,7 @@ export interface Translations {
     all: string;
     shown: string;
     reload: string;
+    calendar: string;
   };
   home: {
     title: string;

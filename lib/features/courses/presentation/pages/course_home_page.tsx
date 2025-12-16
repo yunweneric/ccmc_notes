@@ -11,7 +11,8 @@ import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { useTranslation } from "@/lib/features/i18n";
 import { useCourses } from "../../hooks";
 import { CourseNoteItem } from "../components";
-import { X, AlertCircle, RefreshCw } from "lucide-react";
+import { X, AlertCircle, RefreshCw, Calendar } from "lucide-react";
+import Link from "next/link";
 import { GithubButton } from "@/components/github/GithubButton";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -123,6 +124,17 @@ export function CourseHomePage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Link href="/calendar">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 mt-1 inline-flex items-center gap-1.5"
+              >
+                <Calendar className="h-4 w-4" />
+                <span className="hidden sm:inline">{t('common.calendar')}</span>
+              </Button>
+            </Link>
             <LanguageSwitcher />
             <ThemeSwitcher />
             <GithubButton />
