@@ -43,14 +43,14 @@ export function CalendarWeekView({ currentDate, schedules, onCellClick, onSchedu
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Day headers */}
-      <div className="grid grid-cols-8 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-        <div className="border-r border-zinc-200 dark:border-zinc-800 p-2"></div>
+      <div className="flex border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+        <div className="w-20 shrink-0 border-r border-zinc-200 dark:border-zinc-800 p-2"></div>
         {weekDays.map((day, index) => {
           const isTodayDay = isToday(day);
           return (
             <div
               key={index}
-              className={`border-r border-zinc-200 dark:border-zinc-800 p-2 text-center last:border-r-0 ${
+              className={`flex-1 border-r border-zinc-200 dark:border-zinc-800 p-2 text-center last:border-r-0 ${
                 isTodayDay ? 'bg-blue-50 dark:bg-blue-950/30' : ''
               }`}
             >
@@ -73,16 +73,16 @@ export function CalendarWeekView({ currentDate, schedules, onCellClick, onSchedu
 
       {/* Time slots and schedule grid */}
       <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-8">
+        <div className="flex">
           {/* Time column */}
-          <div className="border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+          <div className="w-20 shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
             {HOURS.map((hour) => (
               <div
                 key={hour}
-                className="border-b border-zinc-200 dark:border-zinc-800"
+                className="border-b border-zinc-200 dark:border-zinc-800 flex items-center"
                 style={{ height: HOUR_HEIGHT }}
               >
-                <div className="px-2 pt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="px-2 text-xs text-zinc-500 dark:text-zinc-400">
                   {formatTime(`${hour.toString().padStart(2, '0')}:00`)}
                 </div>
               </div>
@@ -97,7 +97,7 @@ export function CalendarWeekView({ currentDate, schedules, onCellClick, onSchedu
             return (
               <div
                 key={dayIndex}
-                className={`relative border-r border-zinc-200 dark:border-zinc-800 last:border-r-0 ${
+                className={`flex-1 relative border-r border-zinc-200 dark:border-zinc-800 last:border-r-0 ${
                   isTodayDay ? 'bg-blue-50/30 dark:bg-blue-950/20' : ''
                 }`}
               >

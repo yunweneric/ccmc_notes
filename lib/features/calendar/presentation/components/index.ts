@@ -7,6 +7,8 @@ export { CalendarDayView } from './calendar_day_view';
 export { CalendarYearView } from './calendar_year_view';
 export { CalendarClassBlock } from './calendar_class_block';
 export { CalendarDayCell } from './calendar_day_cell';
+export { CalendarMiniCalendar } from './calendar_mini_calendar';
+export { CalendarEventsList } from './calendar_events_list';
 export { TimetableModal } from './timetable_modal';
 export { TimetableForm } from './timetable_form';
 export * from './calendar_utils';

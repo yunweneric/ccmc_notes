@@ -94,8 +94,8 @@ export function CalendarPreview() {
   }, []);
 
   const handleDayClick = useCallback((date: Date) => {
-    setCurrentDate(date);
-    setView('day');
+    setCurrentDate(getWeekStart(date));
+    setView('week');
   }, []);
 
   const handleMonthClick = useCallback((date: Date) => {
@@ -172,7 +172,6 @@ export function CalendarPreview() {
             currentDate={currentDate}
             schedules={schedules}
             onDayClick={handleDayClick}
-            onCellClick={handleCellClick}
             onScheduleClick={handleScheduleClick}
           />
         )}
@@ -190,6 +189,9 @@ export function CalendarPreview() {
             schedules={schedules}
             onCellClick={handleCellClick}
             onScheduleClick={handleScheduleClick}
+            onDateSelect={(date) => {
+              setCurrentDate(date);
+            }}
           />
         )}
         {view === 'year' && (

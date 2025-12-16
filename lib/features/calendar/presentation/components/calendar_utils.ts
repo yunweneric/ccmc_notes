@@ -3,6 +3,51 @@ import type { ClassSchedule } from '../../data/interfaces';
 export type CalendarView = 'month' | 'week' | 'day' | 'year';
 
 /**
+ * Generate a consistent color for a course based on its code or name
+ */
+export function getCourseColor(courseCode: string, courseName?: string): {
+  border: string;
+  bg: string;
+  text: string;
+  textSecondary: string;
+  textTertiary: string;
+} {
+  // Use course code if available, otherwise use course name
+  const identifier = courseCode || courseName || 'default';
+  
+  // Generate a hash from the identifier
+  let hash = 0;
+  for (let i = 0; i < identifier.length; i++) {
+    hash = identifier.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  // Use hash to select from a predefined palette of colors
+  const colors = [
+    { border: '#3b82f6', bg: 'bg-blue-50', darkBg: 'dark:bg-blue-950/30', text: 'text-blue-900', darkText: 'dark:text-blue-100', textSecondary: 'text-blue-700', darkTextSecondary: 'dark:text-blue-300', textTertiary: 'text-blue-600', darkTextTertiary: 'dark:text-blue-400' }, // Blue
+    { border: '#10b981', bg: 'bg-emerald-50', darkBg: 'dark:bg-emerald-950/30', text: 'text-emerald-900', darkText: 'dark:text-emerald-100', textSecondary: 'text-emerald-700', darkTextSecondary: 'dark:text-emerald-300', textTertiary: 'text-emerald-600', darkTextTertiary: 'dark:text-emerald-400' }, // Emerald
+    { border: '#f59e0b', bg: 'bg-amber-50', darkBg: 'dark:bg-amber-950/30', text: 'text-amber-900', darkText: 'dark:text-amber-100', textSecondary: 'text-amber-700', darkTextSecondary: 'dark:text-amber-300', textTertiary: 'text-amber-600', darkTextTertiary: 'dark:text-amber-400' }, // Amber
+    { border: '#ef4444', bg: 'bg-red-50', darkBg: 'dark:bg-red-950/30', text: 'text-red-900', darkText: 'dark:text-red-100', textSecondary: 'text-red-700', darkTextSecondary: 'dark:text-red-300', textTertiary: 'text-red-600', darkTextTertiary: 'dark:text-red-400' }, // Red
+    { border: '#8b5cf6', bg: 'bg-violet-50', darkBg: 'dark:bg-violet-950/30', text: 'text-violet-900', darkText: 'dark:text-violet-100', textSecondary: 'text-violet-700', darkTextSecondary: 'dark:text-violet-300', textTertiary: 'text-violet-600', darkTextTertiary: 'dark:text-violet-400' }, // Violet
+    { border: '#ec4899', bg: 'bg-pink-50', darkBg: 'dark:bg-pink-950/30', text: 'text-pink-900', darkText: 'dark:text-pink-100', textSecondary: 'text-pink-700', darkTextSecondary: 'dark:text-pink-300', textTertiary: 'text-pink-600', darkTextTertiary: 'dark:text-pink-400' }, // Pink
+    { border: '#06b6d4', bg: 'bg-cyan-50', darkBg: 'dark:bg-cyan-950/30', text: 'text-cyan-900', darkText: 'dark:text-cyan-100', textSecondary: 'text-cyan-700', darkTextSecondary: 'dark:text-cyan-300', textTertiary: 'text-cyan-600', darkTextTertiary: 'dark:text-cyan-400' }, // Cyan
+    { border: '#14b8a6', bg: 'bg-teal-50', darkBg: 'dark:bg-teal-950/30', text: 'text-teal-900', darkText: 'dark:text-teal-100', textSecondary: 'text-teal-700', darkTextSecondary: 'dark:text-teal-300', textTertiary: 'text-teal-600', darkTextTertiary: 'dark:text-teal-400' }, // Teal
+    { border: '#84cc16', bg: 'bg-lime-50', darkBg: 'dark:bg-lime-950/30', text: 'text-lime-900', darkText: 'dark:text-lime-100', textSecondary: 'text-lime-700', darkTextSecondary: 'dark:text-lime-300', textTertiary: 'text-lime-600', darkTextTertiary: 'dark:text-lime-400' }, // Lime
+    { border: '#f97316', bg: 'bg-orange-50', darkBg: 'dark:bg-orange-950/30', text: 'text-orange-900', darkText: 'dark:text-orange-100', textSecondary: 'text-orange-700', darkTextSecondary: 'dark:text-orange-300', textTertiary: 'text-orange-600', darkTextTertiary: 'dark:text-orange-400' }, // Orange
+  ];
+  
+  const index = Math.abs(hash) % colors.length;
+  const color = colors[index];
+  
+  return {
+    border: color.border,
+    bg: `${color.bg} ${color.darkBg}`,
+    text: `${color.text} ${color.darkText}`,
+    textSecondary: `${color.textSecondary} ${color.darkTextSecondary}`,
+    textTertiary: `${color.textTertiary} ${color.darkTextTertiary}`,
+  };
+}
+
+/**
  * Get the Monday of the week for a given date
  */
 export function getWeekStart(date: Date): Date {

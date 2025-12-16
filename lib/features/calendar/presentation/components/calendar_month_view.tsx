@@ -9,7 +9,6 @@ interface CalendarMonthViewProps {
   currentDate: Date;
   schedules: ClassSchedule[];
   onDayClick?: (date: Date) => void;
-  onCellClick?: (date: Date) => void;
   onScheduleClick?: (schedule: ClassSchedule) => void;
 }
 
@@ -19,7 +18,6 @@ export function CalendarMonthView({
   currentDate,
   schedules,
   onDayClick,
-  onCellClick,
   onScheduleClick,
 }: CalendarMonthViewProps) {
   const monthStart = useMemo(() => {
@@ -57,27 +55,22 @@ export function CalendarMonthView({
       </div>
 
       {/* Calendar grid */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-7">
-          {monthDays.map(({ date, isCurrentMonth }, index) => {
-            const dateKey = date.toISOString().split('T')[0];
-            const daySchedules = schedulesByDate.get(dateKey) || [];
+      <div className="flex-1 grid grid-cols-7 grid-rows-6 overflow-hidden">
+        {monthDays.map(({ date, isCurrentMonth }, index) => {
+          const dateKey = date.toISOString().split('T')[0];
+          const daySchedules = schedulesByDate.get(dateKey) || [];
 
-            return (
-              <CalendarDayCell
-                key={index}
-                date={date}
-                isCurrentMonth={isCurrentMonth}
-                schedules={daySchedules}
-                onClick={() => {
-                  onCellClick?.(date);
-                  onDayClick?.(date);
-                }}
-                onScheduleClick={onScheduleClick}
-              />
-            );
-          })}
-        </div>
+          return (
+            <CalendarDayCell
+              key={index}
+              date={date}
+              isCurrentMonth={isCurrentMonth}
+              schedules={daySchedules}
+              onClick={() => onDayClick?.(date)}
+              onScheduleClick={onScheduleClick}
+            />
+          );
+        })}
       </div>
     </div>
   );

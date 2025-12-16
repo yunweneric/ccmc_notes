@@ -1,7 +1,7 @@
 'use client';
 
 import type { ClassSchedule } from '../../data/interfaces';
-import { formatTime } from './calendar_utils';
+import { formatTime, getCourseColor } from './calendar_utils';
 
 interface CalendarClassBlockProps {
   schedule: ClassSchedule;
@@ -11,25 +11,27 @@ interface CalendarClassBlockProps {
 }
 
 export function CalendarClassBlock({ schedule, style, className, onClick }: CalendarClassBlockProps) {
+  const colors = getCourseColor(schedule.courseCode, schedule.courseName);
+
   return (
     <div
-      className={`absolute left-0 right-0 mx-1 rounded-md border-l-4 bg-blue-50 dark:bg-blue-950/30 p-1.5 text-xs shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
+      className={`absolute left-0 right-0 mx-0.5 ${colors.bg} px-1.5 py-1 text-xs cursor-pointer hover:opacity-90 transition-opacity ${
         className || ''
       }`}
       style={{
         ...style,
-        borderLeftColor: '#3b82f6', // blue-500
+        borderLeft: `3px solid ${colors.border}`,
       }}
       onClick={() => onClick?.(schedule)}
     >
-      <div className="font-medium text-blue-900 dark:text-blue-100 truncate">
+      <div className={`font-medium ${colors.text} truncate text-[11px] leading-tight`}>
         {schedule.courseName}
       </div>
-      <div className="text-blue-700 dark:text-blue-300 text-[10px] truncate">
+      <div className={`${colors.textSecondary} text-[10px] truncate leading-tight`}>
         {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
       </div>
       {schedule.location && (
-        <div className="text-blue-600 dark:text-blue-400 text-[10px] truncate">
+        <div className={`${colors.textTertiary} text-[10px] truncate leading-tight`}>
           {schedule.location}
         </div>
       )}
