@@ -11,7 +11,8 @@ import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { useCourses } from "../../hooks/useCourses";
 import { CourseNoteItem } from "../components/CourseNoteItem";
-import { X, AlertCircle, RefreshCw } from "lucide-react";
+import { X, AlertCircle, RefreshCw, Github } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function CourseHomePage() {
   const { t, locale } = useTranslation();
@@ -127,6 +128,22 @@ export function CourseHomePage() {
               type="button"
               variant="outline"
               size="sm"
+              className="h-9 w-9 p-0"
+
+            >
+              <a
+                href="https://github.com/yunweneric/ccmc_notes"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub repository"
+              >
+                <Github className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
+              </a>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
               className="h-9 mt-1 inline-flex items-center gap-1 md:hidden"
               onClick={() => setFiltersOpen(true)}
             >
@@ -160,26 +177,23 @@ export function CourseHomePage() {
               <span className="font-medium text-zinc-800 dark:text-zinc-200">
                 {t('home.recentlyAddedCourses')}
               </span>
-              <span className="h-4 w-12 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></span>
+              <Skeleton className="h-4 w-12" />
             </div>
             <div className="flex gap-3 overflow-x-auto pb-1">
               {[1, 2, 3, 4].map((idx) => (
                 <div
                   key={idx}
-                  className="min-w-[16rem] rounded-lg border border-zinc-200 dark:border-zinc-800 px-3 py-2 relative overflow-hidden"
+                  className="min-w-[16rem] rounded-lg border border-zinc-200 dark:border-zinc-800 px-3 py-2"
                 >
-                  <div className="absolute inset-0 animate-shimmer"></div>
-                  <div className="relative">
-                    <div className="h-4 w-3/4 mb-2 rounded bg-zinc-200 dark:bg-zinc-800"></div>
-                    <div className="h-3 w-full mb-1 rounded bg-zinc-200 dark:bg-zinc-800"></div>
-                    <div className="h-3 w-5/6 rounded bg-zinc-200 dark:bg-zinc-800"></div>
-                    <div className="mt-2 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1.5">
-                        <div className="h-5 w-16 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
-                        <div className="h-5 w-20 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
-                      </div>
-                      <div className="h-4 w-20 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                  <Skeleton className="h-4 w-3/4 mb-2" />
+                  <Skeleton className="h-3 w-full mb-1" />
+                  <Skeleton className="h-3 w-5/6" />
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <Skeleton className="h-5 w-16 rounded-full" />
+                      <Skeleton className="h-5 w-20 rounded-full" />
                     </div>
+                    <Skeleton className="h-4 w-20" />
                   </div>
                 </div>
               ))}
@@ -546,35 +560,32 @@ export function CourseHomePage() {
                     <div key={groupIdx} className="mb-3 last:mb-0 w-full">
                       {/* Group header skeleton */}
                       <div className="mb-2 flex items-center gap-2 w-full">
-                        <div className="h-5 w-20 rounded bg-zinc-200 dark:bg-zinc-800"></div>
-                        <div className="h-5 w-24 rounded bg-zinc-200 dark:bg-zinc-800"></div>
-                        <div className="h-5 flex-1 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                        <Skeleton className="h-5 w-20" />
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="h-5 flex-1" />
                       </div>
                       {/* Note items skeleton */}
                       <ul className="space-y-2 w-full">
                         {[1, 2, 3].map((noteIdx) => (
-                          <li
-                            key={noteIdx}
-                            className="flex flex-col gap-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 relative overflow-hidden w-full"
-                          >
-                            <div className="absolute inset-0 animate-shimmer"></div>
-                            <div className="relative w-full">
+                            <li
+                              key={noteIdx}
+                              className="flex flex-col gap-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 w-full"
+                            >
                               <div className="flex items-start justify-between gap-2 w-full">
                                 <div className="min-w-0 flex-1">
-                                  <div className="h-4 w-3/4 rounded bg-zinc-200 dark:bg-zinc-800 mb-2"></div>
-                                  <div className="h-3 w-full rounded bg-zinc-200 dark:bg-zinc-800 mb-1"></div>
-                                  <div className="h-3 w-5/6 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                                  <Skeleton className="h-4 w-3/4 mb-2" />
+                                  <Skeleton className="h-3 w-full mb-1" />
+                                  <Skeleton className="h-3 w-5/6" />
                                 </div>
-                                <div className="h-6 w-16 rounded-full bg-zinc-200 dark:bg-zinc-800 shrink-0"></div>
+                                <Skeleton className="h-6 w-16 rounded-full shrink-0" />
                               </div>
                               <div className="mt-1 flex flex-wrap items-center gap-2 w-full">
-                                <div className="h-5 w-16 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
-                                <div className="h-5 w-20 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
-                                <div className="h-5 w-24 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
-                                <div className="ml-auto h-4 w-32 rounded bg-zinc-200 dark:bg-zinc-800"></div>
+                                <Skeleton className="h-5 w-16 rounded-full" />
+                                <Skeleton className="h-5 w-20 rounded-full" />
+                                <Skeleton className="h-5 w-24 rounded-full" />
+                                <Skeleton className="ml-auto h-4 w-32" />
                               </div>
-                            </div>
-                          </li>
+                            </li>
                         ))}
                       </ul>
                     </div>
