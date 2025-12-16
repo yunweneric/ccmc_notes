@@ -97,5 +97,22 @@ export interface Translations {
     delete: string;
     confirmDelete: string;
   };
+  auth: {
+    login: string;
+    welcome: string;
+    loginDescription: string;
+    email: string;
+    emailPlaceholder: string;
+    emailRequired: string;
+    invalidEmail: string;
+    password: string;
+    passwordPlaceholder: string;
+    passwordRequired: string;
+    loginButton: string;
+    loggingIn: string;
+    loginError: string;
+    invalidCredentials: string;
+    adminNote: string;
+  };
 }
 

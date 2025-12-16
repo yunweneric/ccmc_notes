@@ -97,5 +97,22 @@ export const fr: Translations = {
     delete: 'Supprimer',
     confirmDelete: 'Êtes-vous sûr de vouloir supprimer cet horaire?',
   },
+  auth: {
+    login: 'Connexion',
+    welcome: 'Bienvenue sur CCMC Notes',
+    loginDescription: 'Connectez-vous pour accéder à vos notes de cours et calendrier',
+    email: 'Email',
+    emailPlaceholder: 'Entrez votre email',
+    emailRequired: 'L\'email est requis',
+    invalidEmail: 'Veuillez entrer une adresse email valide',
+    password: 'Mot de passe',
+    passwordPlaceholder: 'Entrez votre mot de passe',
+    passwordRequired: 'Le mot de passe est requis',
+    loginButton: 'Se connecter',
+    loggingIn: 'Connexion en cours...',
+    loginError: 'Une erreur s\'est produite lors de la connexion. Veuillez réessayer',
+    invalidCredentials: 'Email ou mot de passe invalide',
+    adminNote: 'Contactez votre administrateur pour recevoir vos identifiants de connexion',
+  },
 };
 

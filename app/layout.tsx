@@ -3,6 +3,7 @@ import { Urbanist } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { LanguageProvider } from "@/lib/features/i18n";
+import { AuthProvider, AuthGuard } from "@/lib/features/auth";
 import { Toaster } from "sonner";
 
 const urbanist = Urbanist({
@@ -55,8 +56,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
-            <Toaster position="bottom-right" richColors />
+            <AuthProvider>
+              <AuthGuard>
+                {children}
+              </AuthGuard>
+              <Toaster position="bottom-right" richColors />
+            </AuthProvider>
           </ThemeProvider>
         </LanguageProvider>
       </body>

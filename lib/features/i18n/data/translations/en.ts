@@ -97,5 +97,22 @@ export const en: Translations = {
     delete: 'Delete',
     confirmDelete: 'Are you sure you want to delete this schedule?',
   },
+  auth: {
+    login: 'Login',
+    welcome: 'Welcome to CCMC Notes',
+    loginDescription: 'Sign in to access your course notes and calendar',
+    email: 'Email',
+    emailPlaceholder: 'Enter your email',
+    emailRequired: 'Email is required',
+    invalidEmail: 'Please enter a valid email address',
+    password: 'Password',
+    passwordPlaceholder: 'Enter your password',
+    passwordRequired: 'Password is required',
+    loginButton: 'Sign In',
+    loggingIn: 'Signing in...',
+    loginError: 'An error occurred during login. Please try again',
+    invalidCredentials: 'Invalid email or password',
+    adminNote: 'Contact your administrator to receive login credentials',
+  },
 };
 
