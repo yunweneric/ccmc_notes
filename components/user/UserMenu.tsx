@@ -83,7 +83,7 @@ export function UserMenu() {
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
-        {user.name === Role.ADMIN && (
+        {user.role?.name === Role.ADMIN && (
           <DropdownMenuItem
             onClick={() => router.push('/dashboard')}
             className="cursor-pointer"

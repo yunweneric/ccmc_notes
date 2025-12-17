@@ -1,3 +1,3 @@
 export { AuthService, authService } from './auth_service';
-export type { User, LoginCredentials, AuthState } from '../interfaces';
+export type { AuthUser, LoginCredentials, AuthState } from '../interfaces';
 

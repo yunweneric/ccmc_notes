@@ -1,6 +1,5 @@
 // Data layer exports
-export type { User, LoginCredentials, AuthState } from './data/interfaces';
-export { mapFirebaseUser } from './data/interfaces';
+export type { AuthUser, LoginCredentials, AuthState } from './data/interfaces';
 export { AuthService, authService } from './data/services';
 
 // Hooks exports

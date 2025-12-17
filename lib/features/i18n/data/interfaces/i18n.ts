@@ -112,8 +112,11 @@ export interface Translations {
     loggingIn: string;
     processing: string;
     loginError: string;
+    loginSuccess: string;
     invalidCredentials: string;
     adminNote: string;
+    showPassword: string;
+    hidePassword: string;
   };
 }
 
