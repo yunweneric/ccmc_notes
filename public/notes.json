@@ -104,21 +104,6 @@
     ]
   },
   {
-    "level": "200",
-    "semester": "1",
-    "course_code": "STAT201",
-    "course": "Statistics 201",
-    "notes": [
-      {
-        "title": "Lecture 2 – Probability Distributions",
-        "description": "Discrete vs continuous probability, examples.",
-        "lecturer_name": "Dr. Funmi Bello",
-        "added_date": "2025-09-23",
-        "file_url": "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
-      }
-    ]
-  },
-  {
     "level": "300",
     "semester": "2",
     "course_code": "ACC302",

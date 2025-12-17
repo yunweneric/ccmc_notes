@@ -64,16 +64,7 @@ export class AuthService {
       }
       
       const userData = userDoc.data();
-      return {
-        uid: userData.uid || uid,
-        email: userData.email || null,
-        displayName: userData.displayName || null,
-        photoURL: userData.photoURL || null,
-        role: {
-          name: userData.role as Role,
-          value: userData.role as string,
-        },
-      } as AuthUser;
+      return userData as AuthUser;
     } catch (error) {
       console.error('Error fetching user:', error);
       return null;

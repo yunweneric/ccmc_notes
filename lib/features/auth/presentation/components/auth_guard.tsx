@@ -15,6 +15,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const { user, loading } = useAuthContext();
 
   useEffect(() => {
+    console.log('user', user);
+    console.log('loading', loading);
+    console.log('pathname', pathname);
     // Wait for auth state to load
     if (loading) {
       return;
@@ -24,7 +27,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     if (user && pathname === '/login') {
       // Check if user is admin and redirect to dashboard, otherwise go to home
       if (user.role?.name === Role.ADMIN) {
-        router.replace('/dashboard');
+        router.replace('/admin');
       } else {
         router.replace('/');
       }

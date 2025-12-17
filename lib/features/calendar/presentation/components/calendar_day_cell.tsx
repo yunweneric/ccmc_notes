@@ -43,7 +43,9 @@ export function CalendarDayCell({
       >
         {dayNumber}
       </span>
-      <div className="flex-1 w-full space-y-0.5 min-h-0 overflow-hidden">
+      
+      {/* Desktop: Show schedule tiles */}
+      <div className="hidden md:flex flex-1 w-full space-y-0.5 min-h-0 overflow-hidden">
         {visibleSchedules.map((schedule) => {
           const colors = getCourseColor(schedule.courseCode, schedule.courseName);
           return (
@@ -72,6 +74,34 @@ export function CalendarDayCell({
         {scheduleCount > 4 && (
           <div className="text-[10px] text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5">
             +{scheduleCount - 4} more
+          </div>
+        )}
+      </div>
+
+      {/* Mobile: Show colored dots */}
+      <div className="flex md:hidden flex-1 w-full items-end justify-center pb-1">
+        {schedules.length > 0 && (
+          <div className="flex items-center gap-0.5 flex-wrap justify-center max-w-full">
+            {schedules.slice(0, 6).map((schedule) => {
+              const colors = getCourseColor(schedule.courseCode, schedule.courseName);
+              return (
+                <div
+                  key={schedule.id}
+                  className="h-1.5 w-1.5 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: colors.border }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onScheduleClick?.(schedule);
+                  }}
+                  title={`${schedule.courseName} - ${formatTime(schedule.startTime)}`}
+                />
+              );
+            })}
+            {scheduleCount > 6 && (
+              <span className="text-[8px] text-zinc-500 dark:text-zinc-400 ml-0.5">
+                +{scheduleCount - 6}
+              </span>
+            )}
           </div>
         )}
       </div>

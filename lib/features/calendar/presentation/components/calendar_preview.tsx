@@ -18,9 +18,13 @@ import {
   getYearStart,
 } from './calendar_utils';
 
-export function CalendarPreview() {
+interface CalendarPreviewProps {
+  canEdit?: boolean;
+}
+
+export function CalendarPreview({ canEdit = true }: CalendarPreviewProps) {
   const { schedules, isLoading, error, createSchedule, updateSchedule, deleteSchedule, refetch } = useCalendar();
-  const [view, setView] = useState<CalendarView>('week');
+  const [view, setView] = useState<CalendarView>('day');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<ClassSchedule | null>(null);
@@ -104,18 +108,20 @@ export function CalendarPreview() {
   }, []);
 
   const handleCellClick = useCallback((date: Date, time?: string) => {
+    if (!canEdit) return;
     setSelectedSchedule(null);
     setSelectedDate(date);
     setSelectedTime(time || null);
     setModalOpen(true);
-  }, []);
+  }, [canEdit]);
 
   const handleScheduleClick = useCallback((schedule: ClassSchedule) => {
+    if (!canEdit) return;
     setSelectedSchedule(schedule);
     setSelectedDate(null);
     setSelectedTime(null);
     setModalOpen(true);
-  }, []);
+  }, [canEdit]);
 
   const handleSave = useCallback(async (data: CreateClassSchedule | UpdateClassSchedule) => {
     if ('id' in data) {
@@ -171,24 +177,24 @@ export function CalendarPreview() {
           <CalendarMonthView
             currentDate={currentDate}
             schedules={schedules}
-            onDayClick={handleDayClick}
-            onScheduleClick={handleScheduleClick}
+            onDayClick={canEdit ? handleDayClick : undefined}
+            onScheduleClick={canEdit ? handleScheduleClick : undefined}
           />
         )}
         {view === 'week' && (
           <CalendarWeekView
             currentDate={currentDate}
             schedules={schedules}
-            onCellClick={handleCellClick}
-            onScheduleClick={handleScheduleClick}
+            onCellClick={canEdit ? handleCellClick : undefined}
+            onScheduleClick={canEdit ? handleScheduleClick : undefined}
           />
         )}
         {view === 'day' && (
           <CalendarDayView
             currentDate={currentDate}
             schedules={schedules}
-            onCellClick={handleCellClick}
-            onScheduleClick={handleScheduleClick}
+            onCellClick={canEdit ? handleCellClick : undefined}
+            onScheduleClick={canEdit ? handleScheduleClick : undefined}
             onDateSelect={(date) => {
               setCurrentDate(date);
             }}
@@ -203,15 +209,17 @@ export function CalendarPreview() {
         )}
       </div>
 
-      <TimetableModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        selectedDate={selectedDate || undefined}
-        selectedTime={selectedTime || undefined}
-        schedule={selectedSchedule || undefined}
-        onSave={handleSave}
-        onDelete={handleDelete}
-      />
+      {canEdit && (
+        <TimetableModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          selectedDate={selectedDate || undefined}
+          selectedTime={selectedTime || undefined}
+          schedule={selectedSchedule || undefined}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 }

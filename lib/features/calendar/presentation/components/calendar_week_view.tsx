@@ -107,7 +107,11 @@ export function CalendarWeekView({ currentDate, schedules, onCellClick, onSchedu
                   return (
                     <div
                       key={hour}
-                      className="border-b border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30 cursor-pointer transition-colors"
+                      className={`border-b border-zinc-200 dark:border-zinc-800 transition-colors ${
+                        onCellClick
+                          ? "hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30 cursor-pointer"
+                          : "cursor-default"
+                      }`}
                       style={{ height: HOUR_HEIGHT }}
                       onClick={() => onCellClick?.(day, timeString)}
                     />

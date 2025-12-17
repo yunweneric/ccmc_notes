@@ -124,7 +124,6 @@
   }
 }
 
-
 /* Override ThumbnailsPane div height from 372px to auto */
 @layer utilities {
   /* Target divs inside ThumbnailsPane that have height: 372px */
@@ -135,7 +134,7 @@
   [style*="height:372px;"] {
     height: auto !important;
   }
-  
+
   /* More specific targeting for ThumbnailsPane container divs */
   div[style*="372px"][style*="position: relative"],
   div[style*="372px"][style*="position:relative"] {
