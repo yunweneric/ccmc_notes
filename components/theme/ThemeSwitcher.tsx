@@ -1,6 +1,6 @@
 'use client';
 
-import { Moon, Sun, Monitor, Check } from 'lucide-react';
+import { Moon, Sun, Monitor } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -111,36 +111,21 @@ export function ThemeSwitcher({ variant = 'dropdown', showLabels = false }: Them
       </SelectTrigger>
       <SelectContent align="end">
         <SelectItem value="light">
-          <div className="flex items-center justify-between w-full gap-2">
-            <div className="flex items-center gap-2">
-              <Sun className="h-4 w-4" />
-              <span>{t('theme.light')}</span>
-            </div>
-            {currentTheme === 'light' && (
-              <Check className="h-4 w-4 text-primary" />
-            )}
+          <div className="flex items-center gap-2">
+            <Sun className="h-4 w-4" />
+            <span>{t('theme.light')}</span>
           </div>
         </SelectItem>
         <SelectItem value="dark">
-          <div className="flex items-center justify-between w-full gap-2">
-            <div className="flex items-center gap-2">
-              <Moon className="h-4 w-4" />
-              <span>{t('theme.dark')}</span>
-            </div>
-            {currentTheme === 'dark' && (
-              <Check className="h-4 w-4 text-primary" />
-            )}
+          <div className="flex items-center gap-2">
+            <Moon className="h-4 w-4" />
+            <span>{t('theme.dark')}</span>
           </div>
         </SelectItem>
         <SelectItem value="system">
-          <div className="flex items-center justify-between w-full gap-2">
-            <div className="flex items-center gap-2">
-              <Monitor className="h-4 w-4" />
-              <span>{t('theme.system')}</span>
-            </div>
-            {currentTheme === 'system' && (
-              <Check className="h-4 w-4 text-primary" />
-            )}
+          <div className="flex items-center gap-2">
+            <Monitor className="h-4 w-4" />
+            <span>{t('theme.system')}</span>
           </div>
         </SelectItem>
       </SelectContent>
