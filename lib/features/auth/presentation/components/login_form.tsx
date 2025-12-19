@@ -167,7 +167,7 @@ export function LoginForm() {
         type="submit"
         className="w-full h-11 text-sm font-medium"
         disabled={isLoading}
-        size="md"
+
       >
         {isLoading ? (
           <>

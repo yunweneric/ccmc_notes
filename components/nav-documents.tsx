@@ -31,14 +31,14 @@ export function NavDocuments({
           const isActive = pathname === item.url || (item.url !== "/" && pathname.startsWith(item.url))
 
           return (
-            <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild isActive={isActive}>
                 <Link href={item.url}>
                   <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
+                <span>{item.name}</span>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
           )
         })}
       </SidebarMenu>

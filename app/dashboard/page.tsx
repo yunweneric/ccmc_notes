@@ -52,7 +52,7 @@ export default function Page() {
               <div className="px-4 lg:px-6">
                 <ChartAreaInteractive />
               </div>
-              <DataTable data={data} />
+              {/* <DataTable data={data} /> */}
               <div className="px-4 lg:px-6">
                 <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
                   <div className="border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">

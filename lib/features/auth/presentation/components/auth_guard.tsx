@@ -27,7 +27,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     if (user && pathname === '/login') {
       // Check if user is admin and redirect to dashboard, otherwise go to home
       if (user.role?.name === Role.ADMIN) {
-        router.replace('/admin');
+        router.replace('/dashboard');
       } else {
         router.replace('/');
       }

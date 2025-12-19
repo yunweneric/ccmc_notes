@@ -29,7 +29,7 @@ export function NavProjects({ projects }: NavProjectsProps) {
         {projects.map((item) => {
           const isActive =
             pathname === item.url ||
-            (item.url !== "/admin" &&
+            (item.url !== "/dashboard" &&
               pathname.startsWith(item.url + "/"));
 
           return (

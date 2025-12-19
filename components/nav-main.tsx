@@ -31,14 +31,14 @@ export function NavMain({
             const isActive = pathname === item.url || (item.url !== "/" && pathname.startsWith(item.url))
 
             return (
-              <SidebarMenuItem key={item.title}>
+            <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
                   <Link href={item.url}>
                     {item.icon && <item.icon className="h-4 w-4" />}
-                    <span>{item.title}</span>
+                <span>{item.title}</span>
                   </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             )
           })}
         </SidebarMenu>

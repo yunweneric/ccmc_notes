@@ -208,9 +208,9 @@ export function NavProjects({
         {projects.map((item) => {
           const isActive =
             pathname === item.url ||
-            (item.url !== "/admin" &&
+            (item.url !== "/dashboard" &&
               pathname.startsWith(item.url + "/")) ||
-            (item.url !== "/admin" && pathname === item.url);
+            (item.url !== "/dashboard" && pathname === item.url);
 
           return (
             <SidebarMenuItem key={item.name}>
@@ -471,27 +471,27 @@ const navSecondary = [
 const projects = [
   {
     name: "Dashboard",
-    url: "/admin",
+    url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
     name: "Users",
-    url: "/admin/users",
+    url: "/dashboard/users",
     icon: Users,
   },
   {
     name: "Locations",
-    url: "/admin/locations",
+    url: "/dashboard/locations",
     icon: Map,
   },
   {
     name: "Events",
-    url: "/admin/events",
+    url: "/dashboard/events",
     icon: Calendar,
   },
   {
     name: "Tickets",
-    url: "/admin/tickets",
+    url: "/dashboard/tickets",
     icon: Ticket,
   },
 ];
@@ -575,7 +575,7 @@ export function DashboardSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/admin">
+              <a href="/dashboard">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
@@ -612,7 +612,7 @@ export function DashboardSidebar({
 
 ### Step 6: Create Admin Layout
 
-Create `app/admin/layout.tsx`:
+Create `app/dashboard/layout.tsx`:
 
 ```typescript
 "use client";
@@ -680,22 +680,22 @@ const generateBreadcrumbs = (pathname: string) => {
 
   // Always start with Admin
   if (adminSegments.length === 0) {
-    // If we're on /admin, just show "Admin"
+    // If we're on /dashboard, just show "Admin"
     breadcrumbs.push({
       label: "Admin",
-      href: "/admin",
+      href: "/dashboard",
       isLast: true,
     });
   } else {
     // Add Admin as a link
     breadcrumbs.push({
       label: "Admin",
-      href: "/admin",
+      href: "/dashboard",
       isLast: false,
     });
 
     // Build breadcrumbs from remaining segments
-    let currentPath = "/admin";
+    let currentPath = "/dashboard";
     adminSegments.forEach((segment, index) => {
       currentPath += `/${segment}`;
       const isLast = index === adminSegments.length - 1;
@@ -776,13 +776,13 @@ Edit the `projects` array in `dashboard-sidebar.tsx`:
 const projects = [
   {
     name: "Dashboard",
-    url: "/admin",
+    url: "/dashboard",
     icon: LayoutDashboard,
   },
   // Add your custom items here
   {
     name: "Custom Page",
-    url: "/admin/custom",
+    url: "/dashboard/custom",
     icon: YourIcon, // Import from lucide-react
   },
 ];
@@ -794,7 +794,7 @@ Update the header in `dashboard-sidebar.tsx`:
 
 ```typescript
 <SidebarMenuButton size="lg" asChild>
-  <a href="/admin">
+  <a href="/dashboard">
     <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
       <YourLogo /> {/* Replace Command icon */}
     </div>
@@ -826,7 +826,7 @@ Modify CSS variables in `globals.css`:
 
 ### Customizing Breadcrumb Labels
 
-Add route mappings in `app/admin/layout.tsx`:
+Add route mappings in `app/dashboard/layout.tsx`:
 
 ```typescript
 const routeLabels: Record<string, string> = {
@@ -843,7 +843,7 @@ const routeLabels: Record<string, string> = {
 ### Basic Page
 
 ```typescript
-// app/admin/page.tsx
+// app/dashboard/page.tsx
 export default function AdminPage() {
   return (
     <div>
@@ -857,7 +857,7 @@ export default function AdminPage() {
 ### Nested Route
 
 ```typescript
-// app/admin/users/page.tsx
+// app/dashboard/users/page.tsx
 export default function UsersPage() {
   return (
     <div>
@@ -871,7 +871,7 @@ export default function UsersPage() {
 ### Dynamic Route
 
 ```typescript
-// app/admin/users/[id]/page.tsx
+// app/dashboard/users/[id]/page.tsx
 export default function UserDetailPage({ params }: { params: { id: string } }) {
   return (
     <div>
@@ -900,16 +900,16 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
 ### Active Route Highlighting
 
 Routes are automatically highlighted based on:
-- Exact match for dashboard (`/admin`)
-- Prefix match for sub-routes (`/admin/users` matches `/admin/users/123`)
+- Exact match for dashboard (`/dashboard`)
+- Prefix match for sub-routes (`/dashboard/users` matches `/dashboard/users/123`)
 
 ### Breadcrumb Generation
 
 Breadcrumbs are automatically generated from the route path:
-- `/admin` → `Admin`
-- `/admin/users` → `Admin > Users`
-- `/admin/users/123` → `Admin > Users > Details`
-- `/admin/users/add` → `Admin > Users > Add`
+- `/dashboard` → `Admin`
+- `/dashboard/users` → `Admin > Users`
+- `/dashboard/users/123` → `Admin > Users > Details`
+- `/dashboard/users/add` → `Admin > Users > Add`
 
 ## Troubleshooting
 

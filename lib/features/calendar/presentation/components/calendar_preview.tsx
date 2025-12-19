@@ -210,15 +210,15 @@ export function CalendarPreview({ canEdit = true }: CalendarPreviewProps) {
       </div>
 
       {canEdit && (
-        <TimetableModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          selectedDate={selectedDate || undefined}
-          selectedTime={selectedTime || undefined}
-          schedule={selectedSchedule || undefined}
-          onSave={handleSave}
-          onDelete={handleDelete}
-        />
+      <TimetableModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        selectedDate={selectedDate || undefined}
+        selectedTime={selectedTime || undefined}
+        schedule={selectedSchedule || undefined}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
       )}
     </div>
   );

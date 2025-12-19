@@ -59,7 +59,11 @@ const data = {
       url: "/dashboard/courses",
       icon: BookOpen,
     },
-    
+    {
+      title: "Notes",
+      url: "/dashboard/notes",
+      icon: FileText,
+    },
   ],
   navSecondary: [
     {
