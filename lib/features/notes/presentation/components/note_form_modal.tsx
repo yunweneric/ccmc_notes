@@ -58,7 +58,7 @@ export function NoteFormModal({
         course_id: note.course_id,
         title: note.title,
         description: note.description,
-        lecturer_name: note.lecturer_name,
+        lecturer_name: note.lecturer_name ?? '',
         file_url: note.file_url,
         tags: note.tags || [],
         file_size: note.file_size,

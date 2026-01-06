@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow access to login page, API routes, and static files
@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
 
   // Note: Firebase Auth is client-side, so actual authentication checking
   // happens in client components via AuthProvider.
-  // This middleware only handles route structure.
+  // This proxy only handles route structure.
   // Client-side protection is handled by AuthProvider and page components.
 
   return NextResponse.next();
@@ -35,3 +35,5 @@ export const config = {
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
+
+

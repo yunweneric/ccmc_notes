@@ -1,9 +1,11 @@
+import type { BaseEntity } from '@/lib/shared/interfaces/base';
+
 export enum Role {
   ADMIN = 'admin',
   USER = 'user',
 }
-export interface AuthUser {
-  uid: string;
+export interface AuthUser extends BaseEntity {
+  uid: string; // Firebase Auth UID, should match id
   email: string | null;
   displayName: string | null;
   photoURL: string | null;

@@ -104,7 +104,7 @@ export function NotesTable({
       const search = filterValue.toLowerCase();
       const title = row.original.title.toLowerCase();
       const description = row.original.description.toLowerCase();
-      const lecturer = row.original.lecturer_name.toLowerCase();
+      const lecturer = (row.original.lecturer_name ?? '').toLowerCase();
       const tags = (row.original.tags || []).join(' ').toLowerCase();
       
       return (

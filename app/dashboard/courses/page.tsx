@@ -96,8 +96,13 @@ export default function DashboardCoursesPage() {
         }
       } else {
         // Create new course
+        const courseId = `${data.level}-${data.semester}-${data.course_code}`
+        const now = new Date()
         const newCourse: CourseGroup = {
           ...data,
+          id: courseId,
+          createdAt: now,
+          updatedAt: now,
           notes: [],
         }
         const result = await createCourse(newCourse)
@@ -179,7 +184,7 @@ export default function DashboardCoursesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the course "{courseToDelete?.name}".
+              This will permanently delete the course &quot;{courseToDelete?.name}&quot;.
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

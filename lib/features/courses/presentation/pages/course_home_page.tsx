@@ -288,6 +288,9 @@ export function CourseHomePage() {
                     onClick={() =>
                       handleSelectNote(
                         {
+                          id: `${rc.level}-${rc.semester}-${rc.course_code}`,
+                          createdAt: addedDate,
+                          updatedAt: addedDate,
                           level: rc.level,
                           semester: rc.semester,
                           course: rc.course,

@@ -97,7 +97,10 @@ export default function DashboardNotesPage() {
         }
       } else {
         // Create new note
+        const now = new Date()
         const newNote: Omit<Note, 'id'> = {
+          createdAt: now,
+          updatedAt: now,
           course_id: data.course_id,
           title: data.title,
           description: data.description,

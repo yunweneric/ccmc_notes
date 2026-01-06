@@ -1,3 +1,5 @@
+import type { BaseEntity } from '@/lib/shared/interfaces/base';
+
 export type RawNote = {
   title: string;
   description: string;
@@ -6,7 +8,7 @@ export type RawNote = {
   file_url: string;
 };
 
-export type CourseGroup = {
+export type CourseGroup = BaseEntity & {
   level: string;
   semester: string;
   course: string;

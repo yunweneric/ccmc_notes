@@ -1,5 +1,6 @@
-export interface ClassSchedule {
-  id: string;
+import type { BaseEntity } from '@/lib/shared/interfaces/base';
+
+export interface ClassSchedule extends BaseEntity {
   courseCode: string;
   courseName: string;
   day: string; // "Monday", "Tuesday", etc. or day number (0-6)

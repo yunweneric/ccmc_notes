@@ -8,9 +8,12 @@ export class CalendarService {
   private schedules: ClassSchedule[] = [];
 
   private generateMockData(): ClassSchedule[] {
+    const now = new Date();
     return [
       {
         id: '1',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'CS101',
         courseName: 'Introduction to Computer Science',
         day: 'Monday',
@@ -21,6 +24,8 @@ export class CalendarService {
       },
       {
         id: '2',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'MATH201',
         courseName: 'Calculus II',
         day: 'Monday',
@@ -31,6 +36,8 @@ export class CalendarService {
       },
       {
         id: '3',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'PHYS101',
         courseName: 'Physics Fundamentals',
         day: 'Tuesday',
@@ -41,6 +48,8 @@ export class CalendarService {
       },
       {
         id: '4',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'CS201',
         courseName: 'Data Structures',
         day: 'Tuesday',
@@ -51,6 +60,8 @@ export class CalendarService {
       },
       {
         id: '5',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'ENG101',
         courseName: 'English Composition',
         day: 'Wednesday',
@@ -61,6 +72,8 @@ export class CalendarService {
       },
       {
         id: '6',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'CHEM101',
         courseName: 'General Chemistry',
         day: 'Wednesday',
@@ -71,6 +84,8 @@ export class CalendarService {
       },
       {
         id: '7',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'CS301',
         courseName: 'Algorithms',
         day: 'Thursday',
@@ -81,6 +96,8 @@ export class CalendarService {
       },
       {
         id: '8',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'MATH301',
         courseName: 'Linear Algebra',
         day: 'Thursday',
@@ -91,6 +108,8 @@ export class CalendarService {
       },
       {
         id: '9',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'PHYS201',
         courseName: 'Mechanics',
         day: 'Friday',
@@ -101,6 +120,8 @@ export class CalendarService {
       },
       {
         id: '10',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'CS401',
         courseName: 'Database Systems',
         day: 'Friday',
@@ -111,6 +132,8 @@ export class CalendarService {
       },
       {
         id: '11',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'BIO101',
         courseName: 'Biology I',
         day: 'Monday',
@@ -121,6 +144,8 @@ export class CalendarService {
       },
       {
         id: '12',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'HIST101',
         courseName: 'World History',
         day: 'Tuesday',
@@ -131,6 +156,8 @@ export class CalendarService {
       },
       {
         id: '13',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'CS202',
         courseName: 'Object-Oriented Programming',
         day: 'Wednesday',
@@ -141,6 +168,8 @@ export class CalendarService {
       },
       {
         id: '14',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'STAT201',
         courseName: 'Statistics',
         day: 'Thursday',
@@ -151,6 +180,8 @@ export class CalendarService {
       },
       {
         id: '15',
+        createdAt: now,
+        updatedAt: now,
         courseCode: 'ART101',
         courseName: 'Introduction to Art',
         day: 'Friday',
@@ -191,8 +222,11 @@ export class CalendarService {
     input: CreateClassSchedule
   ): Promise<{ data: ClassSchedule | null; error: Error | null }> {
     try {
+      const now = new Date();
       const newSchedule: ClassSchedule = {
         id: crypto.randomUUID(),
+        createdAt: now,
+        updatedAt: now,
         ...input,
       };
       this.schedules.push(newSchedule);

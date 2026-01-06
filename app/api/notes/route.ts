@@ -44,7 +44,15 @@ function getAllNotes(courseId?: string): Note[] {
       for (const rawNote of course.notes) {
         // Convert RawNote to Note format
         const note: Note = {
+          // BaseEntity fields (approximate from legacy dates)
           id: (rawNote as any).id || generateNoteId(courseIdForNote),
+          createdAt: rawNote.added_date
+            ? new Date(rawNote.added_date)
+            : new Date(),
+          updatedAt: (rawNote as any).updated_date
+            ? new Date((rawNote as any).updated_date)
+            : new Date(),
+          // Note specific fields
           title: rawNote.title,
           description: rawNote.description,
           lecturer_name: rawNote.lecturer_name,
@@ -141,7 +149,11 @@ export async function POST(request: NextRequest) {
 
     // Return Note format
     const createdNote: Note = {
+      // BaseEntity fields
       id: noteId,
+      createdAt: new Date(currentDate),
+      updatedAt: new Date(currentDate),
+      // Note specific fields
       title: noteData.title,
       description: noteData.description,
       lecturer_name: noteData.lecturer_name,
